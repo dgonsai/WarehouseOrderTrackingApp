@@ -10,6 +10,7 @@ public class WarehouseProduct {
 	private double productWeight;
 	private double productDepth;
 	private productPorous productPorous;
+	ArrayList<WarehouseProduct> productList= new ArrayList<WarehouseProduct>();
 	
 	
 	public enum productPorous{
@@ -22,6 +23,14 @@ public class WarehouseProduct {
 	
 	public void setPorous(productPorous pPorous){
 		this.productPorous = pPorous;
+	}
+	
+	public int getID(){
+		return productID;
+	}
+	
+	public void setID(int pID){
+		productID=pID;
 	}
 	
 	public String getName(){
@@ -81,7 +90,8 @@ public class WarehouseProduct {
 	}
 	
 	//constructor for product objects
-	public WarehouseProduct(String productName, double productPrice, int stockLevel, double productHeight, double productWidth, double productWeight, double productDepth){
+	public WarehouseProduct(int productID, String productName, double productPrice, int stockLevel, double productHeight, double productWidth, double productWeight, double productDepth, productPorous productPorous){
+		this.productID=productID;
 		this.productName=productName;
 		this.productPrice = productPrice;
 		this.stockLevel = stockLevel;
@@ -89,21 +99,19 @@ public class WarehouseProduct {
 		this.productWidth = productWidth;
 		this.productWeight = productWeight;
 		this.productDepth= productDepth;
-		//this.productPorous = productPorous;
+		this.productPorous = productPorous;
+		
 	}
 	
 	public String toString(){
-		return "Product Name: " + this.getName() + ", Product Price: £" + this.getPrice();
+		return "Product ID: " + this.getID()+ ", Product Name: " + this.getName() + ", Product Price: £" + this.getPrice()+ ", Stock Level: " + this.getStock() + ", Porous Ware?: " + this.getPorous() +"\n";
 	}
 	
-	//object test - making an object with the use of constructor above
-	public static void main (String [] args){
-		ArrayList<WarehouseProduct> productList= new ArrayList<WarehouseProduct>();
-		WarehouseProduct prod1 = new WarehouseProduct("Garden Gnome",17.99,5,25.3,6.5,70,4);
-		productList.add(prod1);
-		WarehouseProduct prod2 = new WarehouseProduct("That other Gnome",17.99,5,25.3,6.5,70,4);
-		productList.add(prod2);
-		
+
+	public void ProductList(){
+		JDBC jdbc = new JDBC();
+		jdbc.readProducts();
+				
 		System.out.println(productList);
 	}
 	

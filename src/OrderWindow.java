@@ -4,13 +4,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-
 
 
 public class OrderWindow {
@@ -42,40 +42,58 @@ public class OrderWindow {
 		orderFrame.add(controlPanel);
 		orderFrame.add(statusLabel);
 		orderFrame.setVisible(true);
-
 	}
 	
 	private void createButtons(){
 		headerLabel.setText("NB Garden - Warehouse App");
+		JButton orderAdd = new JButton("Add order");
+		JButton orderDelete = new JButton("Delete order");
+		JButton orderSave = new JButton("Save order");
+		JButton orderPrint = new JButton("Print order");
+				
+		orderAdd.setActionCommand("Add order");
+		orderDelete.setActionCommand("Delete order");
+		orderSave.setActionCommand("Save order");
+		orderPrint.setActionCommand("Print order");
+				
+		orderAdd.addActionListener(new ButtonClick());
+		orderDelete.addActionListener(new ButtonClick());
+		orderSave.addActionListener(new ButtonClick());
+		orderPrint.addActionListener(new ButtonClick());
 		
-		JButton orderButton = new JButton("Order List");
-		JButton searchOrder = new JButton("Search Order");
-		
-		orderButton.setActionCommand("Order List");
-		searchOrder.setActionCommand("Search Order");
-		
-		orderButton.addActionListener(new ButtonClick());
-		searchOrder.addActionListener(new ButtonClick());
-		
-		controlPanel.add(orderButton);
-		controlPanel.add(searchOrder);
-		orderFrame.setVisible(true);
+		controlPanel.add(orderAdd);
+		controlPanel.add(orderDelete);
+		controlPanel.add(orderSave);
+		controlPanel.add(orderPrint);
+				
+		orderFrame.setVisible(true);		
 	}
+	
+	
 	
 	private class ButtonClick implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent ae){
 			String command = ae.getActionCommand();
 			switch (command){
-			case "Order List":
-				OrderList();
+			case "Add order":
+				try {
+					AddOrder();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				break;
 			}
 		}
 	}
 	
-	public void OrderList(){
+	public void AddOrder() throws IOException{
 		WarehouseOrder test = new WarehouseOrder(0, null, null, null);
-		test.OrderList();
+		test.addOrder();	
+	}
+
+	public OrderWindow() {
+		designGUI();
+		createButtons();
 	}
 }
