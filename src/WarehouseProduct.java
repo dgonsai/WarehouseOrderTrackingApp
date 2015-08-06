@@ -11,9 +11,6 @@ public class WarehouseProduct {
 	private double productDepth;
 	private boolean productPorous;
 	ArrayList<WarehouseProduct> productList= new ArrayList<WarehouseProduct>();
-	
-	
-	
 		
 	public boolean getPorous(){
 		return productPorous;

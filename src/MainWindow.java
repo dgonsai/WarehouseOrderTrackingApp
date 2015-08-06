@@ -23,6 +23,7 @@ public class MainWindow extends JFrame {
 	private JPanel controlPanel;
 	private JList list;
 	
+		
 	//initialising and design of the main menu GUI
 	private void designGUI(){
 		mainFrame = new JFrame("Main Menu");
@@ -124,8 +125,12 @@ public class MainWindow extends JFrame {
 			public void mouseClicked(MouseEvent event){
 				list = (JList)event.getSource();
 				if (event.getClickCount()==2){
+					int index = list.locationToIndex(event.getPoint());
 					new OrderWindow(){};
 					
+					Object item = listModel.getElementAt(index);;
+					list.ensureIndexIsVisible(index);
+					System.out.println("Double clicked on " + item);
 				}
 			}	
 		});
@@ -154,9 +159,6 @@ public class MainWindow extends JFrame {
 		
 		
 	}
-	
-	
-	
 	
 	public MainWindow() {
 		designGUI();

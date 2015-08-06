@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 public class JDBC {
 	
+	
 	//declaring database driver and the url of the server of the database
 	static final String JDBC_DRIVER="com.mysql.JDBC.Driver";
 	static final String DB_URL ="jdbc:mysql://127.0.0.1:3306/mydb";
@@ -79,7 +80,7 @@ public class JDBC {
 		return productString;
 		 
 	} 
-
+	
 	public ArrayList<String> readOrders(){
 		
 		Connection conn = null;
@@ -95,7 +96,6 @@ public class JDBC {
 			System.out.println("Loading order catalogue...");
 			conn=DriverManager.getConnection(DB_URL,USER,PASS);
 			stmt = conn.createStatement();
-			
 			
 			ResultSet rs = stmt.executeQuery(sql2);
 			while (rs.next()) {
@@ -119,17 +119,13 @@ public class JDBC {
 					else{
 						orderStatus=WarehouseOrder.orderStatus.DISPATCHED;
 					}
-					System.out.println("Order ID: " + orderId + ", Order Status: " + orderStatus + " (Date/Time Placed: " + datePlaced + "/" + timePlaced);
 					
 					orderList.add(new WarehouseOrder(orderId, datePlaced, timePlaced, orderStatus));
 					
-					
 					String order = "ID: " + Integer.toString(orderId) + ", Order Date: "+ datePlaced + ", Order Status: " + orderStatus;
 					orderString.add(order);
-					
 				}
 				rs.close();
-
 			}
 		catch(SQLException sqle) {
 			sqle.printStackTrace();
@@ -154,12 +150,14 @@ public class JDBC {
 		  }
 		 return orderString;
 	} 
-	
+		
 	public void readOrderLine(){
 		Connection conn = null;
 		Statement stmt = null;
-			
-		String sql2 = "SELECT * FROM orderline";
+		
+		//int orderNumber = list.getSelectedIndex();
+		
+		String sql2 = "SELECT * FROM orderline WHERE Orders_OrderID="; //+ order index
 		
 		try{
 			Class.forName("JDBC");
@@ -177,8 +175,8 @@ public class JDBC {
 					System.out.println("Order ID: " + orderId + ", Product ID: " + productId + ", Quantity: " + quantity + ", Delivery Cost: " + delivery);
 				}
 				rs.close();
-
-			}
+		}
+		
 		catch(SQLException sqle) {
 			sqle.printStackTrace();
 		} 

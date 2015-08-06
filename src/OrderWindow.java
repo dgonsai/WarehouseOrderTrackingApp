@@ -37,7 +37,7 @@ public class OrderWindow extends JFrame {
 			productIDtag = new JLabel("Product ID: ");
 			quantityTag = new JLabel("Quantity ");
 			productTag = new JLabel("Products: ");
-			totalTag = new JLabel("Total ");
+			totalTag = new JLabel("Total ");		
 			
 			orderID = new JTextArea("");
 			productID = new JTextArea("");
@@ -47,17 +47,8 @@ public class OrderWindow extends JFrame {
 			layout.setAutoCreateGaps(true);
 			layout.setAutoCreateContainerGaps(true);
 			
-			//adding all of the labels/text boxes to form on the same Y axis
-			GroupLayout.SequentialGroup horizontalGroup = layout.createSequentialGroup();
-			horizontalGroup.addGroup(layout.createParallelGroup().addComponent(orderIDtag).addComponent(productIDtag).addComponent(quantityTag));
-			horizontalGroup.addGroup(layout.createParallelGroup().addComponent(orderID).addComponent(productID).addComponent(quantity));
-			layout.setVerticalGroup(horizontalGroup);
+		
 			
-			//adding all of the labels/text boxes to form on the same X axis
-			GroupLayout.SequentialGroup verticalGroup = layout.createSequentialGroup();
-			verticalGroup.addGroup(layout.createParallelGroup().addComponent(orderIDtag).addComponent(productIDtag).addComponent(quantityTag));
-			verticalGroup.addGroup(layout.createParallelGroup().addComponent(orderID).addComponent(productID).addComponent(quantity));
-			layout.setVerticalGroup(verticalGroup);
 			
 
 			mainFrame.addWindowListener(new WindowAdapter(){
