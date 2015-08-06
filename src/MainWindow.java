@@ -160,6 +160,27 @@ public class MainWindow extends JFrame {
 		
 	}
 	
+	public void DisplayOrderLine(){
+		JDBC jdbc = new JDBC();
+		jdbc.readOrderLine();
+		
+		DefaultListModel<String> listModel = (DefaultListModel<String>) list.getModel();	
+		listModel.clear();
+		
+		for (String productString: jdbc.readProducts()){
+			listModel.addElement(productString);
+		}
+		list.addMouseListener(new MouseAdapter(){
+			public void mouseClicked(MouseEvent event){
+				list = (JList)event.getSource();
+				if (event.getClickCount()==2){
+					new ProductWindow(){};
+					
+				}
+			}	
+		});
+	}
+	
 	public MainWindow() {
 		designGUI();
 		createButtons();

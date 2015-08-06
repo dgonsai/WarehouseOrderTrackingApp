@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class JDBC {
 	
 	
-	//declaring database driver and the url of the server of the database
+	//declaring database driver and the URL of the server of the database
 	static final String JDBC_DRIVER="com.mysql.JDBC.Driver";
 	static final String DB_URL ="jdbc:mysql://127.0.0.1:3306/mydb";
 	
@@ -154,10 +154,10 @@ public class JDBC {
 	public void readOrderLine(){
 		Connection conn = null;
 		Statement stmt = null;
+		String sql2 = "SELECT * FROM orderline"; //+ order index
 		
-		//int orderNumber = list.getSelectedIndex();
-		
-		String sql2 = "SELECT * FROM orderline WHERE Orders_OrderID="; //+ order index
+		ArrayList<WarehouseOrder> orderLineList= new ArrayList<WarehouseOrder>();	
+		ArrayList<String> orderLineString = new ArrayList<String>(0);
 		
 		try{
 			Class.forName("JDBC");
@@ -172,8 +172,13 @@ public class JDBC {
 					int productId = rs.getInt("Products_ProductID");
 					int quantity = rs.getInt("Quantity");
 					int delivery = rs.getInt("deliveryCost");
-					System.out.println("Order ID: " + orderId + ", Product ID: " + productId + ", Quantity: " + quantity + ", Delivery Cost: " + delivery);
+
+					System.out.println("Order ID: " + orderId + ", Product ID: " + productId + ", Quantity: " + quantity);
+					
+					
 				}
+			
+			
 				rs.close();
 		}
 		
