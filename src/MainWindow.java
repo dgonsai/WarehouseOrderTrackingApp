@@ -1,33 +1,26 @@
+import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JFrame;
 import javax.swing.JButton;
-import javax.swing.JTextArea;
-
-//import WarehouseOrder.orderStatus;
-
-
-
+import javax.swing.JScrollPane;
 
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+
 
 
 public class MainWindow extends JFrame {
-	private WarehouseProduct products;
 	private JFrame mainFrame;
 	private JLabel headerLabel;
-	private JLabel statusLabel;
 	private JPanel controlPanel;
-	private JLabel mainText;
 	private JList list;
 	
 	//initialising and design of the main menu GUI
@@ -36,10 +29,11 @@ public class MainWindow extends JFrame {
 		mainFrame.setSize(500, 300);
 		mainFrame.setLayout(new GridLayout(3,1));
 		
-		
+		DefaultListModel<String> listModel = new DefaultListModel<String>();
 		headerLabel = new JLabel ("",JLabel.CENTER);
-		list = new JList();
-		list.setAlignmentX(RIGHT_ALIGNMENT);
+		list = new JList<String>(listModel);
+		add (new JScrollPane(list));
+		list.setVisibleRowCount(4);
 				
 		mainFrame.addWindowListener(new WindowAdapter(){
 			public void WindowClose(WindowEvent windowEvent){
@@ -49,9 +43,10 @@ public class MainWindow extends JFrame {
 		
 		controlPanel = new JPanel();
 		controlPanel.setLayout(new FlowLayout());
+		controlPanel.add(list);
+		mainFrame.add(list);
 		mainFrame.add(headerLabel);
 		mainFrame.add(controlPanel);
-		mainFrame.add(list);
 		mainFrame.setVisible(true);
 
 	}
@@ -62,14 +57,12 @@ public class MainWindow extends JFrame {
 		JButton orderMenuButton = new JButton("Order Menu");
 		JButton orderListButton = new JButton("Order List");
 		JButton productListButton = new JButton("Product List");
-		
-		
+				
 		productButton.setActionCommand("Product Menu");
 		orderMenuButton.setActionCommand("Order Menu");
 		orderListButton.setActionCommand("Order List");
 		productListButton.setActionCommand("Product List");
-		
-		
+				
 		productButton.addActionListener(new ButtonClick());
 		orderMenuButton.addActionListener(new ButtonClick());
 		orderListButton.addActionListener(new ButtonClick());
@@ -86,7 +79,6 @@ public class MainWindow extends JFrame {
 		productListButton.setAlignmentX(LEFT_ALIGNMENT);
 		
 		mainFrame.setVisible(true);
-			
 	}
 	
 	private class ButtonClick implements ActionListener{
@@ -102,7 +94,7 @@ public class MainWindow extends JFrame {
 					
 				//order menu button clicked
 				case "Order Menu":
-					new OrderWindow(){};
+					
 					break;
 					
 				//order list button clicked
@@ -117,24 +109,55 @@ public class MainWindow extends JFrame {
 		}
 	}
 	
-	
-	
 	public void DisplayOrderList(){
 		JDBC jdbc = new JDBC();
 		jdbc.readOrders();
 		
+		DefaultListModel<String> listModel = (DefaultListModel<String>) list.getModel();	
+		listModel.clear();
+		
+		for (String orderString: jdbc.readOrders()){
+			listModel.addElement(orderString);
+		}
+		
+		list.addMouseListener(new MouseAdapter(){
+			public void mouseClicked(MouseEvent event){
+				list = (JList)event.getSource();
+				if (event.getClickCount()==2){
+					new OrderWindow(){};
+					
+				}
+			}	
+		});
+		
 	}
 	
 	public void DisplayProductList(){
-		//display the products from the array
-		//return the array from the warehouseProduct class
-		//WarehouseProduct test = new WarehouseProduct(1,"Garden Gnome",17.99,5,25.3,6.5,70,4,WarehouseProduct.productPorous.APPLIED);
-		//test.ProductList();
 		JDBC jdbc = new JDBC();
 		jdbc.readProducts();
 		
-	}
+		DefaultListModel<String> listModel = (DefaultListModel<String>) list.getModel();	
+		listModel.clear();
 		
+		for (String productString: jdbc.readProducts()){
+			listModel.addElement(productString);
+		}
+		list.addMouseListener(new MouseAdapter(){
+			public void mouseClicked(MouseEvent event){
+				list = (JList)event.getSource();
+				if (event.getClickCount()==2){
+					new ProductWindow(){};
+					
+				}
+			}	
+		});
+		
+		
+	}
+	
+	
+	
+	
 	public MainWindow() {
 		designGUI();
 		createButtons();

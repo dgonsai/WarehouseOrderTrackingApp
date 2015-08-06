@@ -9,19 +9,17 @@ public class WarehouseProduct {
 	private double productWidth;
 	private double productWeight;
 	private double productDepth;
-	private productPorous productPorous;
+	private boolean productPorous;
 	ArrayList<WarehouseProduct> productList= new ArrayList<WarehouseProduct>();
 	
 	
-	public enum productPorous{
-		REQUIRED, APPLIED, INESSENTIAL;
-	}
+	
 		
-	public productPorous getPorous(){
+	public boolean getPorous(){
 		return productPorous;
 	}
 	
-	public void setPorous(productPorous pPorous){
+	public void setPorous(boolean pPorous){
 		this.productPorous = pPorous;
 	}
 	
@@ -90,7 +88,7 @@ public class WarehouseProduct {
 	}
 	
 	//constructor for product objects
-	public WarehouseProduct(int productID, String productName, double productPrice, int stockLevel, double productHeight, double productWidth, double productWeight, double productDepth, productPorous productPorous){
+	public WarehouseProduct(int productID, String productName, double productPrice, int stockLevel, double productHeight, double productWidth, double productWeight, double productDepth, boolean productPorous){
 		this.productID=productID;
 		this.productName=productName;
 		this.productPrice = productPrice;
@@ -111,7 +109,8 @@ public class WarehouseProduct {
 	public void ProductList(){
 		JDBC jdbc = new JDBC();
 		jdbc.readProducts();
-				
+		
+		
 		System.out.println(productList);
 	}
 	

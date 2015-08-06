@@ -7,90 +7,107 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.Vector;
 
+import javax.swing.DefaultListModel;
+import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
+public class OrderWindow extends JFrame {
+		private JFrame mainFrame;
+		private JLabel headerLabel;
+		private JPanel controlPanel;
+		private JList list;
+		private JLabel orderIDtag, productIDtag, quantityTag, productTag, totalTag;
+		private JTextArea orderID, productID, quantity, total, product;
+		
+		//initialising and design of the main menu GUI
+		private void designGUI(){
+			mainFrame = new JFrame("Order Menu");
+			mainFrame.setSize(500, 800);
+			mainFrame.setLayout(new GridLayout(4,3));
+			controlPanel = new JPanel();
+			controlPanel.setLayout(new FlowLayout());
+			headerLabel = new JLabel ("",JLabel.CENTER);
+			orderIDtag = new JLabel("Order ID: ");
+			productIDtag = new JLabel("Product ID: ");
+			quantityTag = new JLabel("Quantity ");
+			productTag = new JLabel("Products: ");
+			totalTag = new JLabel("Total ");
+			
+			orderID = new JTextArea("");
+			productID = new JTextArea("");
+			quantity = new JTextArea("");
+			
+			GroupLayout layout = new GroupLayout(controlPanel);
+			layout.setAutoCreateGaps(true);
+			layout.setAutoCreateContainerGaps(true);
+			
+			//adding all of the labels/text boxes to form on the same Y axis
+			GroupLayout.SequentialGroup horizontalGroup = layout.createSequentialGroup();
+			horizontalGroup.addGroup(layout.createParallelGroup().addComponent(orderIDtag).addComponent(productIDtag).addComponent(quantityTag));
+			horizontalGroup.addGroup(layout.createParallelGroup().addComponent(orderID).addComponent(productID).addComponent(quantity));
+			layout.setVerticalGroup(horizontalGroup);
+			
+			//adding all of the labels/text boxes to form on the same X axis
+			GroupLayout.SequentialGroup verticalGroup = layout.createSequentialGroup();
+			verticalGroup.addGroup(layout.createParallelGroup().addComponent(orderIDtag).addComponent(productIDtag).addComponent(quantityTag));
+			verticalGroup.addGroup(layout.createParallelGroup().addComponent(orderID).addComponent(productID).addComponent(quantity));
+			layout.setVerticalGroup(verticalGroup);
+			
 
-public class OrderWindow {
-
-	private JFrame orderFrame;
-	private JLabel headerLabel;
-	private JLabel statusLabel;
-	private JPanel controlPanel;
-	
-	//initialising and design of the main menu GUI
-	private void designGUI(){
-		orderFrame = new JFrame("Order Menu");
-		orderFrame.setSize(400, 300);
-		orderFrame.setLayout(new GridLayout(3,1));
-		
-		headerLabel = new JLabel ("",JLabel.CENTER);
-		statusLabel = new JLabel ("",JLabel.CENTER);
-		statusLabel.setSize(350, 100);
-		
-		orderFrame.addWindowListener(new WindowAdapter(){
-			public void WindowClose(WindowEvent windowEvent){
-				System.exit(0);
-			}
-		});
-		
-		controlPanel = new JPanel();
-		controlPanel.setLayout(new FlowLayout());
-		orderFrame.add(headerLabel);
-		orderFrame.add(controlPanel);
-		orderFrame.add(statusLabel);
-		orderFrame.setVisible(true);
-	}
-	
-	private void createButtons(){
-		headerLabel.setText("NB Garden - Warehouse App");
-		JButton orderAdd = new JButton("Add order");
-		JButton orderDelete = new JButton("Delete order");
-		JButton orderSave = new JButton("Save order");
-		JButton orderPrint = new JButton("Print order");
-				
-		orderAdd.setActionCommand("Add order");
-		orderDelete.setActionCommand("Delete order");
-		orderSave.setActionCommand("Save order");
-		orderPrint.setActionCommand("Print order");
-				
-		orderAdd.addActionListener(new ButtonClick());
-		orderDelete.addActionListener(new ButtonClick());
-		orderSave.addActionListener(new ButtonClick());
-		orderPrint.addActionListener(new ButtonClick());
-		
-		controlPanel.add(orderAdd);
-		controlPanel.add(orderDelete);
-		controlPanel.add(orderSave);
-		controlPanel.add(orderPrint);
-				
-		orderFrame.setVisible(true);		
-	}
-	
-	
-	
-	private class ButtonClick implements ActionListener{
-		@Override
-		public void actionPerformed(ActionEvent ae){
-			String command = ae.getActionCommand();
-			switch (command){
-			case "Add order":
-				try {
-					AddOrder();
-				} catch (IOException e) {
-					e.printStackTrace();
+			mainFrame.addWindowListener(new WindowAdapter(){
+				public void WindowClose(WindowEvent windowEvent){
+					System.exit(0);
 				}
-				break;
+			});
+			
+			
+			mainFrame.add(headerLabel);
+			mainFrame.add(controlPanel);
+			mainFrame.setVisible(true);
+
+		}
+		
+		private void createButtons(){
+			headerLabel.setText("NB Gardens - Orders");
+			
+			JButton saveOrderButton = new JButton("Save Order");				
+			saveOrderButton.setActionCommand("Save Order");				
+			saveOrderButton.addActionListener(new ButtonClick());			
+			controlPanel.add(saveOrderButton);
+			
+			JButton changeStatusButton = new JButton("Change status to next stage");
+			changeStatusButton.setActionCommand("Change Status");
+			changeStatusButton.addActionListener(new ButtonClick());
+			controlPanel.add(changeStatusButton);
+			
+			saveOrderButton.setAlignmentX(LEFT_ALIGNMENT);
+			changeStatusButton.setAlignmentX(LEFT_ALIGNMENT);
+	
+						
+			mainFrame.setVisible(true);
+		}
+		
+		private class ButtonClick implements ActionListener{
+			@Override
+			public void actionPerformed(ActionEvent ae){
+				String command = ae.getActionCommand();
+				switch (command){
+					
+					case "Save Order":
+						//enter code for updating order in database here
+					case "Change Status":
+						//enter code for updating status of an order here
+						break;
+					
+				}
 			}
 		}
-	}
-	
-	public void AddOrder() throws IOException{
-		WarehouseOrder test = new WarehouseOrder(0, null, null, null);
-		test.addOrder();	
-	}
 
 	public OrderWindow() {
 		designGUI();
