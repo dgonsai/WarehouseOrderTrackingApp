@@ -28,7 +28,7 @@ public class MainWindow extends JFrame {
 	//initialising and design of the main menu GUI
 	private void designGUI(){
 		mainFrame = new JFrame("Main Menu");
-		mainFrame.setSize(500, 300);
+		mainFrame.setSize(500, 400);
 		mainFrame.setLayout(new GridLayout(3,1));
 		
 		DefaultListModel<String> listModel = new DefaultListModel<String>();
@@ -55,35 +55,39 @@ public class MainWindow extends JFrame {
 	
 	private void createButtons(){
 		headerLabel.setText("NB Garden - Warehouse App");
-		JButton productButton = new JButton("Product Menu");
+		JButton poListButton = new JButton("Purchase Order Menu");
 		JButton orderMenuButton = new JButton("Order Menu");
 		JButton orderListButton = new JButton("Order List");
 		JButton productListButton = new JButton("Product List");
 		JButton addPOButton = new JButton("Add New Purchase Order");
 		JButton editPOButton = new JButton("Add items to existing Purchase Order");
+		JButton changeStatus = new JButton("Change Status");
 				
-		productButton.setActionCommand("Product Menu");
-		orderMenuButton.setActionCommand("Order Menu");
+		poListButton.setActionCommand("Purchase Order List");
+		orderMenuButton.setActionCommand("View Items in order");
 		orderListButton.setActionCommand("Order List");
 		productListButton.setActionCommand("Product List");
 		addPOButton.setActionCommand("Add New Purchase Order");
 		editPOButton.setActionCommand("Edit Purchase Order");
+		changeStatus.setActionCommand("Change Order Status");
 				
-		productButton.addActionListener(new ButtonClick());
+		poListButton.addActionListener(new ButtonClick());
 		orderMenuButton.addActionListener(new ButtonClick());
 		orderListButton.addActionListener(new ButtonClick());
 		productListButton.addActionListener(new ButtonClick());
 		addPOButton.addActionListener(new ButtonClick());
 		editPOButton.addActionListener(new ButtonClick());
+		changeStatus.addActionListener(new ButtonClick());
 		
-		controlPanel.add(productButton);
+		controlPanel.add(poListButton);
 		controlPanel.add(orderMenuButton);
 		controlPanel.add(orderListButton);
 		controlPanel.add(productListButton);
 		controlPanel.add(addPOButton);
 		controlPanel.add(editPOButton);
+		controlPanel.add(changeStatus);
 		
-		productButton.setAlignmentX(LEFT_ALIGNMENT);
+		poListButton.setAlignmentX(LEFT_ALIGNMENT);
 		orderMenuButton.setAlignmentX(LEFT_ALIGNMENT);
 		orderListButton.setAlignmentX(LEFT_ALIGNMENT);
 		productListButton.setAlignmentX(LEFT_ALIGNMENT);
@@ -98,12 +102,12 @@ public class MainWindow extends JFrame {
 			switch (command){
 				
 				//product menu button clicked
-				case "Product Menu":
-					new ProductWindow(){};
+				case "Purchase Order List":
+					DisplayPurchaseOrderList();
 					break;
 					
 				//order menu button clicked
-				case "Order Menu":
+				case "View Items in order":
 					DisplayOrderLine();
 					break;
 					
@@ -119,8 +123,13 @@ public class MainWindow extends JFrame {
 				case "Add New Purchase Order":
 					addPurchaseOrder();
 					break;
+					
 				case "Edit Purchase Order":
 					addPOProducts();
+					break;
+					
+				case "Change order status":
+					break;
 			}
 		}
 	}
@@ -180,9 +189,22 @@ public class MainWindow extends JFrame {
 		
 		DefaultListModel<String> listModel = (DefaultListModel<String>) list.getModel();	
 		listModel.clear();
-		//new OrderWindow();		
+		for (String productString: jdbc.readOrderLine()){
+			listModel.addElement(productString);
+		}		
 	}
 	
+	public void DisplayPurchaseOrderList(){
+		JDBC jdbc = new JDBC();
+		
+		jdbc.readPurchaseOrder();
+		
+		DefaultListModel<String> listModel = (DefaultListModel<String>) list.getModel();	
+		listModel.clear();
+		for (String productString: jdbc.readPurchaseOrder()){
+			listModel.addElement(productString);
+		}		
+	}
 	public void addPurchaseOrder(){
 		JDBC jdbc = new JDBC();
 		jdbc.addPurchaseOrder();
