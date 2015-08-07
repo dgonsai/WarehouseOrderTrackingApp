@@ -37,7 +37,7 @@ public class OrderWindow extends JFrame {
 			productIDtag = new JLabel("Product ID: ");
 			quantityTag = new JLabel("Quantity ");
 			productTag = new JLabel("Products: ");
-			totalTag = new JLabel("Total ");		
+					
 			
 			orderID = new JTextArea("");
 			productID = new JTextArea("");
@@ -48,8 +48,7 @@ public class OrderWindow extends JFrame {
 			layout.setAutoCreateContainerGaps(true);
 			
 		
-			
-			
+						
 
 			mainFrame.addWindowListener(new WindowAdapter(){
 				public void WindowClose(WindowEvent windowEvent){
@@ -61,6 +60,10 @@ public class OrderWindow extends JFrame {
 			mainFrame.add(headerLabel);
 			mainFrame.add(controlPanel);
 			mainFrame.setVisible(true);
+			mainFrame.add(orderIDtag);
+			mainFrame.add(productIDtag);
+			mainFrame.add(quantityTag);
+			mainFrame.add(productTag);
 
 		}
 		

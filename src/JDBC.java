@@ -4,6 +4,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Scanner;
+
+import javax.swing.JOptionPane;
 
 public class JDBC {
 	
@@ -104,16 +107,16 @@ public class JDBC {
 					String timePlaced = rs.getString("timePlaced");
 					String orderStatusChoice = rs.getString("orderStatus");
 					
-					if(orderStatusChoice=="WAITINGFORPROCESS"){
+					if(orderStatusChoice.equals("WAITINGFORPROCESS")){
 						orderStatus=WarehouseOrder.orderStatus.WAITINGFORPROCESS;
 					}
-					else if (orderStatusChoice=="PICKED"){
+					else if (orderStatusChoice.equals("PICKED")){
 						orderStatus=WarehouseOrder.orderStatus.PICKED;
 					}
-					else if (orderStatusChoice=="PACKED"){
+					else if (orderStatusChoice.equals("PACKED")){
 						orderStatus=WarehouseOrder.orderStatus.PACKED;
 					}
-					else if (orderStatusChoice=="DISPATCHREADY"){
+					else if (orderStatusChoice.equals("DISPATCHREADY")){
 						orderStatus=WarehouseOrder.orderStatus.DISPATCHREADY;
 					}
 					else{
@@ -152,36 +155,39 @@ public class JDBC {
 	} 
 		
 	public void readOrderLine(){
+
 		Connection conn = null;
 		Statement stmt = null;
-		String sql2 = "SELECT * FROM orderline"; //+ order index
 		
+		int orderID = Integer.parseInt(JOptionPane.showInputDialog("Please enter the order ID of the order you wish to see"));
+		String sql2 = "SELECT * FROM orderline WHERE orderline.Orders_OrderID=" + orderID;
+		String sql3 = "SELECT * FROM Orders WHERE orderline.Orders_OrderID="+orderID;
+		String sql4 = "SELECT * FROM products, orderline WHERE Orders_OrderID ="+orderID+" AND orderline.Products_ProductID = products.ProductID";
+				
 		ArrayList<WarehouseOrder> orderLineList= new ArrayList<WarehouseOrder>();	
 		ArrayList<String> orderLineString = new ArrayList<String>(0);
+		ArrayList<WarehouseProduct> productList = new ArrayList<WarehouseProduct>();
+		ArrayList<String> productString = new ArrayList<String>(0);
 		
 		try{
 			Class.forName("JDBC");
 			System.out.println("Loading order catalogue...");
 			conn=DriverManager.getConnection(DB_URL,USER,PASS);
-	
 			System.out.println("Creating statement...");
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql2);
+			
 			while (rs.next()) {
-					int orderId = rs.getInt("Orders_OrderID");
-					int productId = rs.getInt("Products_ProductID");
-					int quantity = rs.getInt("Quantity");
-					int delivery = rs.getInt("deliveryCost");
-
-					System.out.println("Order ID: " + orderId + ", Product ID: " + productId + ", Quantity: " + quantity);
-					
-					
-				}
-			
-			
-				rs.close();
+				int orderId = rs.getInt("Orders_OrderID");
+				int productId = rs.getInt("Products_ProductID");
+				int quantity = rs.getInt("Quantity");
+				int subtotal = rs.getInt("subtotal");
+				
+				//String productSQL = "SELECT productPrice FROM Products WHERE orderline.Products_ProductID = Products.productID";
+				System.out.println("Order ID: " + orderId + ", Product ID: " + productId + ", Quantity: " + quantity + ", Subtotal: "+subtotal);
+			}
+			rs.close();
 		}
-		
 		catch(SQLException sqle) {
 			sqle.printStackTrace();
 		} 
@@ -203,6 +209,155 @@ public class JDBC {
 					System.out.println("Goodbye!");
 				}
 		  }
+		
+		try{
+			Class.forName("JDBC");
+			System.out.println("Loading order catalogue...");
+			conn=DriverManager.getConnection(DB_URL,USER,PASS);
+			System.out.println("Creating statement...");
+			stmt = conn.createStatement();
+			
+			ResultSet productRS =stmt.executeQuery(sql4);
+			
+			while(productRS.next()){
+				int productId = productRS.getInt("ProductID");
+				String prodName = productRS.getString("ProductName");
+				double  productPrice = productRS.getDouble("ProductPrice");
+				int stock = productRS.getInt("StockLevel");
+				double  height = productRS.getInt("Height");
+				double weight = productRS.getInt("Weight");
+				double width= productRS.getInt("Width");
+				double depth = productRS.getInt("Depth");
+				boolean porous = productRS.getBoolean("Porous");
+														
+				productList.add(new WarehouseProduct(productId, prodName, productPrice, stock, height, width, weight, depth, porous));
+			
+				String product = "ID: " + Integer.toString(productId) + ", Product Name: "+ prodName + ", Stock: " + Integer.toString(stock)+ ", Porous Wared?: "+porous;
+				productString.add(product);
+				System.out.println("Product Name: "+prodName + ", Price: "+productPrice);
+			}
+			productRS.close();
+		}
+		catch(SQLException sqle) {
+			sqle.printStackTrace();
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		} 
+		finally {
+			try {
+			  if (stmt != null)
+			  conn.close();
+			} 
+			catch (SQLException se) { }
+				try {
+					if (conn != null)
+						conn.close();
+				} 
+				catch (SQLException se) {
+					se.printStackTrace();
+					System.out.println("Goodbye!");
+				}
+		  }
+	}
+	
+	public void editStatus(){
+		
+	}
+	
+	public void addPurchaseOrder(){
+		Connection conn = null;
+		Statement stmt = null;
+		
+		int PurchaseOrderID = Integer.parseInt(JOptionPane.showInputDialog("Please enter the purchase order ID"));
+		String sql4 = "SELECT PurchaseOrderID FROM PurchaseOrder WHERE PurchaseOrder.PurchaseOrderID="+PurchaseOrderID;
+		String Supplier= JOptionPane.showInputDialog("Please enter the supplier name of the purchase order");
+		
+		try{
+			Class.forName("JDBC");
+			System.out.println("Connecting to NB Gardens database...");
+			conn=DriverManager.getConnection(DB_URL,USER,PASS);
+	
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql4);
+			
+			
+						
+			stmt.executeUpdate("INSERT INTO `PurchaseOrder`(PurchaseOrderID,Supplier) VALUE('"+PurchaseOrderID+"','"+Supplier+"')");
+			System.out.println("IT IS DONE");
+			
+		}
+		catch(SQLException sqle) {
+			sqle.printStackTrace();
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		} 
+		finally {
+			try {
+			  if (stmt != null)
+			  conn.close();
+			} 
+			catch (SQLException se) { }
+				try {
+					if (conn != null)
+						conn.close();
+				} 
+				catch (SQLException se) {
+					se.printStackTrace();
+					System.out.println("Goodbye!");
+				}
+		  }
+		}
+	
+	public void addToPO(){
+		Connection conn = null;
+		Statement stmt = null;
+		
+		int PurchaseOrderID = Integer.parseInt(JOptionPane.showInputDialog("Please enter the purchase order ID you wish to add products to"));
+		String ProductID = JOptionPane.showInputDialog("Please enter the productID of the product you wish to acquire from this purchase order (enter [quit] if you wish to stop adding products");
+		
+		if(ProductID.equals("[quit]")){
+			return;
+		}
+		else{
+			int Quantity= Integer.parseInt(JOptionPane.showInputDialog("Please enter the quantity of the product you wish to acquire from this purchase order"));	
+			
+			String sql2 = "SELECT * FROM POLine WHERE POLine.PuchaseOrderID=" + PurchaseOrderID;
+			
+			try{
+				Class.forName("JDBC");
+				System.out.println("Connecting to NB Gardens database...");
+				conn=DriverManager.getConnection(DB_URL,USER,PASS);
+				stmt = conn.createStatement();
+				
+				stmt.executeUpdate("INSERT INTO `POLine`(PurchaseOrderID,ProductID,Quantity) VALUE ('"+PurchaseOrderID+"','"+ProductID+"','"+Quantity+"')");
+				System.out.println("IT IS DONE!!!");
+				
+			}
+			catch(SQLException sqle) {
+				sqle.printStackTrace();
+			} 
+			catch (Exception e) {
+				e.printStackTrace();
+			} 
+			finally {
+				try {
+				  if (stmt != null)
+				  conn.close();
+				} 
+				catch (SQLException se) { }
+					try {
+						if (conn != null)
+							conn.close();
+					} 
+					catch (SQLException se) {
+						se.printStackTrace();
+						System.out.println("Goodbye!");
+					}
+				  
+			}
+		}
 	}
 }
 

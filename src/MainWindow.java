@@ -1,5 +1,6 @@
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JFrame;
@@ -58,21 +59,29 @@ public class MainWindow extends JFrame {
 		JButton orderMenuButton = new JButton("Order Menu");
 		JButton orderListButton = new JButton("Order List");
 		JButton productListButton = new JButton("Product List");
+		JButton addPOButton = new JButton("Add New Purchase Order");
+		JButton editPOButton = new JButton("Add items to existing Purchase Order");
 				
 		productButton.setActionCommand("Product Menu");
 		orderMenuButton.setActionCommand("Order Menu");
 		orderListButton.setActionCommand("Order List");
 		productListButton.setActionCommand("Product List");
+		addPOButton.setActionCommand("Add New Purchase Order");
+		editPOButton.setActionCommand("Edit Purchase Order");
 				
 		productButton.addActionListener(new ButtonClick());
 		orderMenuButton.addActionListener(new ButtonClick());
 		orderListButton.addActionListener(new ButtonClick());
 		productListButton.addActionListener(new ButtonClick());
+		addPOButton.addActionListener(new ButtonClick());
+		editPOButton.addActionListener(new ButtonClick());
 		
 		controlPanel.add(productButton);
 		controlPanel.add(orderMenuButton);
 		controlPanel.add(orderListButton);
 		controlPanel.add(productListButton);
+		controlPanel.add(addPOButton);
+		controlPanel.add(editPOButton);
 		
 		productButton.setAlignmentX(LEFT_ALIGNMENT);
 		orderMenuButton.setAlignmentX(LEFT_ALIGNMENT);
@@ -95,7 +104,7 @@ public class MainWindow extends JFrame {
 					
 				//order menu button clicked
 				case "Order Menu":
-					
+					DisplayOrderLine();
 					break;
 					
 				//order list button clicked
@@ -106,6 +115,12 @@ public class MainWindow extends JFrame {
 				case "Product List":
 					DisplayProductList();
 					break;
+				
+				case "Add New Purchase Order":
+					addPurchaseOrder();
+					break;
+				case "Edit Purchase Order":
+					addPOProducts();
 			}
 		}
 	}
@@ -155,30 +170,37 @@ public class MainWindow extends JFrame {
 					
 				}
 			}	
-		});
-		
-		
+		});		
 	}
 	
 	public void DisplayOrderLine(){
 		JDBC jdbc = new JDBC();
+		
 		jdbc.readOrderLine();
 		
 		DefaultListModel<String> listModel = (DefaultListModel<String>) list.getModel();	
 		listModel.clear();
+		//new OrderWindow();		
+	}
+	
+	public void addPurchaseOrder(){
+		JDBC jdbc = new JDBC();
+		jdbc.addPurchaseOrder();
 		
-		for (String productString: jdbc.readProducts()){
-			listModel.addElement(productString);
+		String option = JOptionPane.showInputDialog("Would you like to add products to a purchase order? (y/n)");
+		System.out.println(option);
+		if (option.equals("y")){
+			System.out.println(option);
+			addPOProducts();
 		}
-		list.addMouseListener(new MouseAdapter(){
-			public void mouseClicked(MouseEvent event){
-				list = (JList)event.getSource();
-				if (event.getClickCount()==2){
-					new ProductWindow(){};
-					
-				}
-			}	
-		});
+		else{
+			return;
+		}
+	}
+	
+	public void addPOProducts(){
+		JDBC jdbc = new JDBC();
+		jdbc.addToPO();
 	}
 	
 	public MainWindow() {

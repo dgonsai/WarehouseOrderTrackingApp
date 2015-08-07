@@ -3,6 +3,7 @@ public class WarehouseOrderLine {
 	private int orderID;
 	private int productID;
 	private int quantity;
+	private int subtotal;
 	
 	public int getOrderID(){
 		return orderID;
@@ -28,10 +29,19 @@ public class WarehouseOrderLine {
 		quantity = orderLineQuantity;
 	}
 	
-	public WarehouseOrderLine(int orderID, int productID, int quantity){
+	public int getSubtotal(){
+		return subtotal;
+	}
+	
+	public void setSubtotal(int sub){
+		subtotal = sub;
+	}
+	
+	public WarehouseOrderLine(int orderID, int productID, int quantity, int subtotal){
 		this.orderID = orderID;
 		this.productID = productID;
 		this.quantity = quantity;
+		this.subtotal = subtotal;
 	}
 	
 
