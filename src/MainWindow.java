@@ -6,6 +6,8 @@ import javax.swing.JLabel;
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -146,6 +148,18 @@ public class MainWindow extends JFrame {
 		for (String orderString: jdbc.readOrders()){
 			listModel.addElement(orderString);
 		}
+		
+		list.addMouseListener(new MouseAdapter(){
+			public void mouseClicked(MouseEvent event){
+				list = (JList)event.getSource();
+				if (event.getClickCount()==2){
+					 int index = list.locationToIndex(event.getPoint());
+				     Object item = listModel.getElementAt(index);;
+				     list.ensureIndexIsVisible(index);
+				     System.out.println("Double clicked on " + item);
+				}
+			}	
+		});
 	}
 	
 	public void DisplayProductList(){
@@ -156,7 +170,6 @@ public class MainWindow extends JFrame {
 		for (String productString: jdbc.readProducts()){
 			listModel.addElement(productString);
 		}
-			
 	}
 	
 	public void DisplayOrderLine(){

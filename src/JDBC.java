@@ -162,6 +162,10 @@ public class JDBC {
 		
 		int orderID = Integer.parseInt(JOptionPane.showInputDialog("Please enter the order ID of the order you wish to see"));
 		String sql2 = "SELECT * FROM orderline WHERE orderline.Orders_OrderID=" + orderID;
+		
+		//String sql = "SELECT A.Orders_OrderID, B.Products_ProductID, C.Quantity, D. ProductName, E.ProductPrice FROM orderline B INNER JOIN products D IN D.ProductID = B.Products_ProductID INNER JOIN products E IN E.ProductID = Products_ProductID WHERE orderline.Orders_OrderID=" + orderID;
+				
+		
 		String sql3 = "SELECT * FROM Orders WHERE orderline.Orders_OrderID="+orderID;
 		String sql4 = "SELECT * FROM products, orderline WHERE Orders_OrderID ="+orderID+" AND orderline.Products_ProductID = products.ProductID";
 				
