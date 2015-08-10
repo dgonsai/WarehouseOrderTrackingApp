@@ -57,7 +57,7 @@ public class MainWindow extends JFrame {
 		
 		//declaring all of the buttons on the application
 		headerLabel.setText("NB Garden - Warehouse App");
-		JButton poButton = new JButton("View Purchase Orders");
+		JButton poButton = new JButton("Purchase Order List");
 		JButton poListButton = new JButton("View Items in a Purchase Order");
 		JButton orderMenuButton = new JButton("View Items in an Order");
 		JButton orderListButton = new JButton("Order List");
@@ -114,7 +114,7 @@ public class MainWindow extends JFrame {
 			switch (command){
 				
 				//Displaying all purchase order lines
-				case "View Items in a Purchase Order":
+				case "View Items in Purchase Order":
 					DisplayPurchaseOrderList();
 					break;
 				
@@ -217,12 +217,13 @@ public class MainWindow extends JFrame {
 			listModel.addElement(poString);
 		}
 	}
+	
 	public void DisplayPurchaseOrderList(){
 		JDBC jdbc = new JDBC();
 		jdbc.readPurchaseOrderLine();
 		DefaultListModel<String> listModel = (DefaultListModel<String>) list.getModel();	
 		listModel.clear();
-		for (String productString: jdbc.readPurchaseOrder()){
+		for (String productString: jdbc.readPurchaseOrderLine()){
 			listModel.addElement(productString);
 		}		
 	}

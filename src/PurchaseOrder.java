@@ -29,8 +29,6 @@ public class PurchaseOrder {
 		delivered = del;
 	}
 	
-	
-	
 	public PurchaseOrder(int PurchaseOrderID, String supplierName, String delivered){
 		this.purchaseOrderID = PurchaseOrderID;
 		this.supplierName = supplierName;

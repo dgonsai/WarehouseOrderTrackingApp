@@ -9,8 +9,6 @@ import java.util.Scanner;
 import javax.swing.JOptionPane;
 
 public class JDBC {
-	
-	
 	//declaring database driver and the URL of the server of the database
 	static final String JDBC_DRIVER="com.mysql.JDBC.Driver";
 	static final String DB_URL ="jdbc:mysql://127.0.0.1:3306/mydb";
@@ -205,7 +203,6 @@ public class JDBC {
 		  }
 		 return poString;	
 	}
-	
 	
 	public ArrayList<String> readOrderLine(){
 
@@ -443,7 +440,7 @@ public class JDBC {
 		int orderID = Integer.parseInt(JOptionPane.showInputDialog("Please enter the order ID of the order you wish to change the status of"));
 		String status ="";
 		String sql2 = "SELECT * FROM orders WHERE orders.orderID=" + orderID;
-
+		
 		int dialogResult = JOptionPane.showConfirmDialog(null, "Would you like to move the order with order ID "+orderID+" to the next stage?");		
 		if(dialogResult==JOptionPane.NO_OPTION){
 			return;
@@ -460,12 +457,10 @@ public class JDBC {
 				ResultSet rs = stmt.executeQuery(sql2);
 				
 				while (rs.next()){
-					
-					System.out.println(status);
-					
+					status = rs.getString("orderStatus");
 					if(status.equals("WAITINGFORPROCESS")){
 						status="PICKED";
-						stockUpdate();
+						//stockUpdate();
 						//take away quantity of order line from stock from product
 					}
 					else if (status.equals("PICKED")){
@@ -481,9 +476,9 @@ public class JDBC {
 						System.out.println("Order has been dispatched!");
 						return;
 					}
-				
 				}
-				rs.close();		
+				rs.close();
+				
 				String updateStatus = "UPDATE orders SET orderStatus ='"+status+"'WHERE OrderID ='"+ orderID+"';";
 				stmt.executeUpdate(updateStatus);
 				System.out.println("IT IS DONE!!!");
@@ -517,9 +512,7 @@ public class JDBC {
 	}
 	
 	public void stockUpdate(){
-		Connection conn = null;
-		Statement stmt = null;
-		
+		int newStock = 0;
 		
 		
 	}
@@ -531,8 +524,8 @@ public class JDBC {
 		String sql4 = "SELECT PurchaseOrderID FROM PurchaseOrder";
 		
 		String Supplier= JOptionPane.showInputDialog("Please enter the supplier name of the purchase order");
-		ArrayList poArray = new ArrayList();
-		
+		ArrayList<Integer> poArray = new ArrayList<Integer>();
+		//changed recently to incorporate generics
 		try{
 			Class.forName("JDBC");
 			System.out.println("Connecting to NB Gardens database...");
@@ -573,8 +566,8 @@ public class JDBC {
 					se.printStackTrace();
 					System.out.println("Goodbye!");
 				}
-		  }
-		}
+		 }
+	}
 
 	public void editWorkStatus(){
 		Connection conn = null;
