@@ -95,7 +95,6 @@ public class WarehouseProduct {
 		this.productWeight = productWeight;
 		this.productDepth= productDepth;
 		this.productPorous = productPorous;
-		
 	}
 	
 	public String toString(){

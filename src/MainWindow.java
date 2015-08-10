@@ -23,12 +23,11 @@ public class MainWindow extends JFrame {
 	private JLabel headerLabel;
 	private JPanel controlPanel;
 	private JList list;
-	
 		
 	//initialising and design of the main menu GUI
 	private void designGUI(){
 		mainFrame = new JFrame("Main Menu");
-		mainFrame.setSize(500, 400);
+		mainFrame.setSize(550, 400);
 		mainFrame.setLayout(new GridLayout(3,1));
 		
 		DefaultListModel<String> listModel = new DefaultListModel<String>();
@@ -50,13 +49,12 @@ public class MainWindow extends JFrame {
 		mainFrame.add(headerLabel);
 		mainFrame.add(controlPanel);
 		mainFrame.setVisible(true);
-
 	}
 	
 	private void createButtons(){
 		headerLabel.setText("NB Garden - Warehouse App");
-		JButton poListButton = new JButton("Purchase Order Menu");
-		JButton orderMenuButton = new JButton("Order Menu");
+		JButton poListButton = new JButton("View Purchase Orders made");
+		JButton orderMenuButton = new JButton("View Items in an Order");
 		JButton orderListButton = new JButton("Order List");
 		JButton productListButton = new JButton("Product List");
 		JButton addPOButton = new JButton("Add New Purchase Order");
@@ -79,10 +77,10 @@ public class MainWindow extends JFrame {
 		editPOButton.addActionListener(new ButtonClick());
 		changeStatus.addActionListener(new ButtonClick());
 		
-		controlPanel.add(poListButton);
-		controlPanel.add(orderMenuButton);
 		controlPanel.add(orderListButton);
 		controlPanel.add(productListButton);
+		controlPanel.add(orderMenuButton);
+		controlPanel.add(poListButton);
 		controlPanel.add(addPOButton);
 		controlPanel.add(editPOButton);
 		controlPanel.add(changeStatus);
@@ -101,33 +99,37 @@ public class MainWindow extends JFrame {
 			String command = ae.getActionCommand();
 			switch (command){
 				
-				//product menu button clicked
+				//Displaying all purchase order lines
 				case "Purchase Order List":
 					DisplayPurchaseOrderList();
 					break;
 					
-				//order menu button clicked
+				//View items on an entered order
 				case "View Items in order":
 					DisplayOrderLine();
 					break;
 					
-				//order list button clicked
+				//List all orders on the database
 				case "Order List": 
 					DisplayOrderList();
 					break;
 					
+				//List all products on the database
 				case "Product List":
 					DisplayProductList();
 					break;
 				
+				//Add a new purchase order
 				case "Add New Purchase Order":
 					addPurchaseOrder();
 					break;
-					
+				
+				//Add items to an existing purchase order
 				case "Edit Purchase Order":
 					addPOProducts();
 					break;
-					
+				
+				//Change the status of an order
 				case "Change Order Status":
 					changeStatus();
 					break;
@@ -135,27 +137,22 @@ public class MainWindow extends JFrame {
 		}
 	}
 	
+	
 	public void DisplayOrderList(){
 		JDBC jdbc = new JDBC();
 		jdbc.readOrders();
-		
 		DefaultListModel<String> listModel = (DefaultListModel<String>) list.getModel();	
 		listModel.clear();
-		
 		for (String orderString: jdbc.readOrders()){
 			listModel.addElement(orderString);
 		}
-		
-		
 	}
 	
 	public void DisplayProductList(){
 		JDBC jdbc = new JDBC();
 		jdbc.readProducts();
-		
 		DefaultListModel<String> listModel = (DefaultListModel<String>) list.getModel();	
 		listModel.clear();
-		
 		for (String productString: jdbc.readProducts()){
 			listModel.addElement(productString);
 		}
@@ -163,10 +160,8 @@ public class MainWindow extends JFrame {
 	}
 	
 	public void DisplayOrderLine(){
-		JDBC jdbc = new JDBC();
-		
+		JDBC jdbc = new JDBC();	
 		jdbc.readOrderLine();
-		
 		DefaultListModel<String> listModel = (DefaultListModel<String>) list.getModel();	
 		listModel.clear();
 		for (String olList: jdbc.readOrderLine()){
@@ -177,7 +172,6 @@ public class MainWindow extends JFrame {
 	public void DisplayPurchaseOrderList(){
 		JDBC jdbc = new JDBC();
 		jdbc.readPurchaseOrder();
-		
 		DefaultListModel<String> listModel = (DefaultListModel<String>) list.getModel();	
 		listModel.clear();
 		for (String productString: jdbc.readPurchaseOrder()){
@@ -188,7 +182,6 @@ public class MainWindow extends JFrame {
 	public void addPurchaseOrder(){
 		JDBC jdbc = new JDBC();
 		jdbc.addPurchaseOrder();
-		
 		String option = JOptionPane.showInputDialog("Would you like to add products to a purchase order? (y/n)");
 		if (option.equals("y")){
 			addPOProducts();
@@ -205,7 +198,6 @@ public class MainWindow extends JFrame {
 	
 	public void changeStatus(){
 		JDBC jdbc = new JDBC();
-		
 		jdbc.editStatus();
 	}
 	

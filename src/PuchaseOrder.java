@@ -2,7 +2,6 @@
 public class PuchaseOrder {
 	private int purchaseOrderID;
 	private String supplierName;
-	private int quantity;
 	
 	public int getPurchaseID(){
 		return purchaseOrderID;
@@ -20,17 +19,11 @@ public class PuchaseOrder {
 		supplierName = supplier;
 	}
 	
-	public int getQuantity(){
-		return quantity;
-	}
-	
-	public void setQuantity(int quant){
-		quantity = quant;
-	}
+
 	
 	public PuchaseOrder(int PurchaseOrderID, String supplierName, int quantity){
 		this.purchaseOrderID = PurchaseOrderID;
 		this.supplierName = supplierName;
-		this.quantity = quantity;
+	
 	}
 }

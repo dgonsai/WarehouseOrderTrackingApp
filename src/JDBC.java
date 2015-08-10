@@ -106,6 +106,7 @@ public class JDBC {
 					String datePlaced = rs.getString("datePlaced");
 					String timePlaced = rs.getString("timePlaced");
 					String orderStatusChoice = rs.getString("orderStatus");
+					boolean workedOn = rs.getBoolean("WorkedOn?");
 					
 					if(orderStatusChoice.equals("WAITINGFORPROCESS")){
 						orderStatus=WarehouseOrder.orderStatus.WAITINGFORPROCESS;
@@ -123,9 +124,9 @@ public class JDBC {
 						orderStatus=WarehouseOrder.orderStatus.DISPATCHED;
 					}
 					
-					orderList.add(new WarehouseOrder(orderId, datePlaced, timePlaced, orderStatus));
+					orderList.add(new WarehouseOrder(orderId, datePlaced, timePlaced, orderStatus, workedOn));
 					
-					String order = "ID: " + Integer.toString(orderId) + ", Order Date: "+ datePlaced + ", Order Status: " + orderStatus;
+					String order = "ID: " + Integer.toString(orderId) + ", Order Date: "+ datePlaced + ", Order Status: " + orderStatus + ", Worked On?: "+ workedOn;
 					orderString.add(order);
 				}
 				rs.close();
@@ -182,7 +183,6 @@ public class JDBC {
 				int productId = rs.getInt("Products_ProductID");
 				int quantity = rs.getInt("Quantity");
 			
-				
 				//String productSQL = "SELECT productPrice FROM Products WHERE orderline.Products_ProductID = Products.productID";
 				
 				orderLineList.add(new WarehouseOrderLine(orderId, productId, quantity));
@@ -276,8 +276,8 @@ public class JDBC {
 		String sql3 = "SELECT * FROM purchaseorder WHERE poline.Orders_OrderID="+poID;
 		String sql4 = "SELECT * FROM products, poline WHERE PurchaseOrderID ="+poID+" AND poline.ProductID = products.ProductID";
 				
-		ArrayList<WarehouseOrder> orderLineList= new ArrayList<WarehouseOrder>();	
-		ArrayList<String> orderLineString = new ArrayList<String>(0);
+		ArrayList<PurchaseOrderLine> poLineList= new ArrayList<PurchaseOrderLine>();	
+		ArrayList<String> poLineString = new ArrayList<String>(0);
 		ArrayList<WarehouseProduct> productList = new ArrayList<WarehouseProduct>();
 		ArrayList<String> productString = new ArrayList<String>(0);
 		
@@ -294,8 +294,11 @@ public class JDBC {
 				int productId = rs.getInt("ProductID");
 				int quantity = rs.getInt("Quantity");
 				
-				//String productSQL = "SELECT productPrice FROM Products WHERE orderline.Products_ProductID = Products.productID";
+				poLineList.add(new PurchaseOrderLine(purchaseId, productId, quantity));
 				System.out.println("Order ID: " + purchaseId + ", Product ID: " + productId + ", Quantity: " + quantity);
+				String poLine = "Order ID: " + Integer.toString(purchaseId) + ", Product ID: "+ Integer.toString(productId) + ", Quantity: " + Integer.toString(quantity);
+				poLineString.add(poLine);
+				
 			}
 			rs.close();
 		}
@@ -370,12 +373,11 @@ public class JDBC {
 					System.out.println("Goodbye!");
 				}
 		  }
-		return productString;
+		return poLineString;
 		
 	}
 	
 	public void editStatus(){
-
 		Connection conn = null;
 		Statement stmt = null;
 		int orderID = Integer.parseInt(JOptionPane.showInputDialog("Please enter the order ID of the order you wish to change the status of"));
@@ -421,14 +423,13 @@ public class JDBC {
 				}
 				rs.close();
 				
-				
 				String updateStatus = "UPDATE orders SET orderStatus ='"+status+"'WHERE OrderID ='"+ orderID+"';";
 				stmt.executeUpdate(updateStatus);
 
 				System.out.println("IT IS DONE!!!");
 				return;
-				
 			}
+			
 			catch(SQLException sqle) {
 				sqle.printStackTrace();
 			} 
@@ -507,6 +508,8 @@ public class JDBC {
 		}
 
 	public void productStockUpdate(){
+		Connection conn = null;
+		Statement stmt = null;
 		
 	}
 	

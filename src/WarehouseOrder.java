@@ -5,6 +5,7 @@ public class WarehouseOrder{
 	private String datePlaced;
 	private String timePlaced;
 	private orderStatus orderStatus;
+	private boolean workedOn;
 	public ArrayList<WarehouseOrder> orderList= new ArrayList<WarehouseOrder>();
 	
 	
@@ -45,12 +46,21 @@ public class WarehouseOrder{
 		timePlaced=orderTime;
 	}
 	
+	public boolean getWorked(){
+		return workedOn;
+	}
+	
+	public void setWorked(boolean worked){
+		workedOn=worked;
+	}
+	
 	//order constructor
-	public WarehouseOrder(int ordID, String datePlaced, String timePlaced, orderStatus orderStatus){
+	public WarehouseOrder(int ordID, String datePlaced, String timePlaced, orderStatus orderStatus, boolean workedOn){
 		this.ordID=ordID;
 		this.datePlaced = datePlaced;
 		this.timePlaced = timePlaced;
 		this.orderStatus = orderStatus;
+		this.workedOn = workedOn;
 	}
 	
 	//for displaying order in console (test)
