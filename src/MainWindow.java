@@ -61,7 +61,7 @@ public class MainWindow extends JFrame {
 		JButton productListButton = new JButton("Product List");
 		JButton addPOButton = new JButton("Add New Purchase Order");
 		JButton editPOButton = new JButton("Add items to existing Purchase Order");
-		JButton changeStatus = new JButton("Change Status");
+		JButton changeStatus = new JButton("Change Order Status");
 				
 		poListButton.setActionCommand("Purchase Order List");
 		orderMenuButton.setActionCommand("View Items in order");
@@ -128,7 +128,8 @@ public class MainWindow extends JFrame {
 					addPOProducts();
 					break;
 					
-				case "Change order status":
+				case "Change Order Status":
+					changeStatus();
 					break;
 			}
 		}
@@ -145,19 +146,6 @@ public class MainWindow extends JFrame {
 			listModel.addElement(orderString);
 		}
 		
-		list.addMouseListener(new MouseAdapter(){
-			public void mouseClicked(MouseEvent event){
-				list = (JList)event.getSource();
-				if (event.getClickCount()==2){
-					int index = list.locationToIndex(event.getPoint());
-					new OrderWindow(){};
-					
-					Object item = listModel.getElementAt(index);;
-					list.ensureIndexIsVisible(index);
-					System.out.println("Double clicked on " + item);
-				}
-			}	
-		});
 		
 	}
 	
@@ -171,15 +159,7 @@ public class MainWindow extends JFrame {
 		for (String productString: jdbc.readProducts()){
 			listModel.addElement(productString);
 		}
-		list.addMouseListener(new MouseAdapter(){
-			public void mouseClicked(MouseEvent event){
-				list = (JList)event.getSource();
-				if (event.getClickCount()==2){
-					new ProductWindow(){};
-					
-				}
-			}	
-		});		
+			
 	}
 	
 	public void DisplayOrderLine(){
@@ -189,14 +169,13 @@ public class MainWindow extends JFrame {
 		
 		DefaultListModel<String> listModel = (DefaultListModel<String>) list.getModel();	
 		listModel.clear();
-		for (String productString: jdbc.readOrderLine()){
-			listModel.addElement(productString);
+		for (String olList: jdbc.readOrderLine()){
+			listModel.addElement(olList);
 		}		
 	}
 	
 	public void DisplayPurchaseOrderList(){
 		JDBC jdbc = new JDBC();
-		
 		jdbc.readPurchaseOrder();
 		
 		DefaultListModel<String> listModel = (DefaultListModel<String>) list.getModel();	
@@ -205,14 +184,13 @@ public class MainWindow extends JFrame {
 			listModel.addElement(productString);
 		}		
 	}
+	
 	public void addPurchaseOrder(){
 		JDBC jdbc = new JDBC();
 		jdbc.addPurchaseOrder();
 		
 		String option = JOptionPane.showInputDialog("Would you like to add products to a purchase order? (y/n)");
-		System.out.println(option);
 		if (option.equals("y")){
-			System.out.println(option);
 			addPOProducts();
 		}
 		else{
@@ -223,6 +201,12 @@ public class MainWindow extends JFrame {
 	public void addPOProducts(){
 		JDBC jdbc = new JDBC();
 		jdbc.addToPO();
+	}
+	
+	public void changeStatus(){
+		JDBC jdbc = new JDBC();
+		
+		jdbc.editStatus();
 	}
 	
 	public MainWindow() {

@@ -1,12 +1,4 @@
 import java.util.ArrayList;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Date;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalTime;
-import javax.swing.JList;
 
 public class WarehouseOrder{
 	private int ordID;
@@ -67,68 +59,6 @@ public class WarehouseOrder{
 		return "Order ID: " + this.getID() + ", Date Placed: " + this.getDate() + ", Time Placed: " + this.getTime() + ", Order Status: " + this.getStatus() +"\n";
 	}
 	
-	//Listing the orders in the array
-	public void OrderList() {
-		//dummy orders
-		orderList.add(new WarehouseOrder(1, "1/1/2015", "13:35", orderStatus.PICKED));
-		orderList.add(new WarehouseOrder(2, "2/2/2015", "13:34", orderStatus.DISPATCHREADY));
-		System.out.println(orderList);
-		JList list = new JList(orderList.toArray());
-		
-	}
-		
-	//adding an order to the array
-	public void addOrder() throws IOException{
-
-		//import a reader to read user input
-		//boolean newOrder = false; //boolean to determine an order has been entered
-		BufferedReader input = new BufferedReader(new InputStreamReader (System.in));
-			
-		
-		ordID = ordID+1;
-		
-		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-	    Date datePlaced = new Date();
-	    String dateString = dateFormat.format(datePlaced);
-
-		LocalTime timePlaced = LocalTime.now();
-		System.out.println(timePlaced);
-		String timeString = timePlaced.toString();
-		
-		orderStatus= orderStatus.WAITINGFORPROCESS;
-		
-		orderList.add(new WarehouseOrder(ordID, dateString,timeString,orderStatus));
-		System.out.println(orderList);
-		return;
-		
-	}
-	
-	public void searchOrder() throws IOException{
-		boolean found = false;
-		int position = 0;
-		
-		BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-		
-		System.out.println("Please enter the id of the order you are searching for");
-		position = Integer.parseInt(input.readLine());
-		
-
-		for (int i=0; i<orderList.size(); i++){
-			if (this.orderList.get(i).getID()==position){
-				found = true;
-				position = i;
-				break;
-			}
-		}
-		if(found){
-			System.out.println("Found!");
-			System.out.println(this.orderList.get(position));
-		}
-		else{
-			System.out.println("Order not found!");
-		}
-	}
-
 }
 	
 	

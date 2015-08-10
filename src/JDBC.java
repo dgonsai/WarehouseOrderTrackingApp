@@ -166,6 +166,8 @@ public class JDBC {
 				
 		ArrayList<WarehouseProduct> productList = new ArrayList<WarehouseProduct>();
 		ArrayList<String> productString = new ArrayList<String>(0);
+		ArrayList<WarehouseOrderLine> orderLineList = new ArrayList<WarehouseOrderLine>();
+		ArrayList<String>olList = new ArrayList<String>(0);
 		
 		try{
 			Class.forName("JDBC");
@@ -179,10 +181,14 @@ public class JDBC {
 				int orderId = rs.getInt("Orders_OrderID");
 				int productId = rs.getInt("Products_ProductID");
 				int quantity = rs.getInt("Quantity");
-				int subtotal = rs.getInt("subtotal");
+			
 				
 				//String productSQL = "SELECT productPrice FROM Products WHERE orderline.Products_ProductID = Products.productID";
-				System.out.println("Order ID: " + orderId + ", Product ID: " + productId + ", Quantity: " + quantity + ", Subtotal: "+subtotal);
+				
+				orderLineList.add(new WarehouseOrderLine(orderId, productId, quantity));
+				System.out.println("Order ID: " + orderId + ", Product ID: " + productId + ", Quantity: " + quantity);
+				String orderLine = "Order ID: " + Integer.toString(orderId) + ", Product ID: "+ Integer.toString(productId) + ", Quantity: " + Integer.toString(quantity);
+				olList.add(orderLine);
 			}
 			rs.close();
 		}
@@ -227,15 +233,16 @@ public class JDBC {
 				double width= productRS.getInt("Width");
 				double depth = productRS.getInt("Depth");
 				boolean porous = productRS.getBoolean("Porous");
-														
+			
 				productList.add(new WarehouseProduct(productId, prodName, productPrice, stock, height, width, weight, depth, porous));
 			
-				String product = "ID: " + Integer.toString(productId) + ", Product Name: "+ prodName + ", Stock: " + Integer.toString(stock)+ ", Porous Wared?: "+porous + "Quantity ordered: "+ "";
+				String product = "ID: " + Integer.toString(productId) + ", Product Name: "+ prodName + ", Stock: " + Integer.toString(stock)+ ", Porous Wared?: "+porous;
 				productString.add(product);
 				System.out.println("Product Name: "+prodName + ", Price: "+productPrice);
 			}
 			productRS.close();
 		}
+		
 		catch(SQLException sqle) {
 			sqle.printStackTrace();
 		} 
@@ -257,7 +264,7 @@ public class JDBC {
 					System.out.println("Goodbye!");
 				}
 		  }
-		return productString;
+		return olList;
 	}
 	
 	public ArrayList<String> readPurchaseOrder(){
@@ -368,12 +375,84 @@ public class JDBC {
 	}
 	
 	public void editStatus(){
+
 		Connection conn = null;
 		Statement stmt = null;
-		
-		
-		//String sqlChangeStatus = "SELECT orderStatus FROM orders WHERE orderStatus = "
-	}
+		int orderID = Integer.parseInt(JOptionPane.showInputDialog("Please enter the order ID of the order you wish to change the status of"));
+		String status ="";
+		String sql2 = "SELECT * FROM orders WHERE orders.orderID=" + orderID;
+		int dialogResult = JOptionPane.showConfirmDialog(null, "Would you like to move the order with order ID "+orderID+" to the next stage?");
+		if(dialogResult==JOptionPane.NO_OPTION){
+			return;
+		}
+		else{
+			try{
+				Class.forName("JDBC");
+				System.out.println("Connecting to NB Gardens database...");
+				conn=DriverManager.getConnection(DB_URL,USER,PASS);
+				stmt = conn.createStatement();
+				
+				System.out.println("Creating statement...");
+				stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql2);
+				
+				while (rs.next()){
+					status = rs.getString("orderStatus");
+					System.out.println(status);
+					
+					if(status.equals("WAITINGFORPROCESS")){
+						status="PICKED";
+					}
+					else if (status.equals("PICKED")){
+						status="PACKED";
+					}
+					else if (status.equals("PACKED")){
+						status="DISPATCHREADY";
+					}
+					else if (status.equals("DISPATCHREADY")){
+						status="DISPATCHED";
+						productStockUpdate();
+					}
+					else{
+						System.out.println("Order has been dispatched!");
+						return;
+					}
+					
+				}
+				rs.close();
+				
+				
+				String updateStatus = "UPDATE orders SET orderStatus ='"+status+"'WHERE OrderID ='"+ orderID+"';";
+				stmt.executeUpdate(updateStatus);
+
+				System.out.println("IT IS DONE!!!");
+				return;
+				
+			}
+			catch(SQLException sqle) {
+				sqle.printStackTrace();
+			} 
+			catch (Exception e) {
+				e.printStackTrace();
+			} 
+			finally {
+				try {
+				  if (stmt != null)
+				  conn.close();
+				} 
+				catch (SQLException se) { }
+					try {
+						if (conn != null)
+							conn.close();
+					} 
+					catch (SQLException se) {
+						se.printStackTrace();
+						System.out.println("Goodbye!");
+					}
+				  
+			}
+		}
+		}
 	
 	public void addPurchaseOrder(){
 		Connection conn = null;
@@ -426,8 +505,13 @@ public class JDBC {
 				}
 		  }
 		}
+
+	public void productStockUpdate(){
+		
+	}
 	
 	public void addToPO(){
+
 		Connection conn = null;
 		Statement stmt = null;
 		
