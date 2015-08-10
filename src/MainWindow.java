@@ -18,8 +18,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 
-
-
 public class MainWindow extends JFrame {
 	private JFrame mainFrame;
 	private JLabel headerLabel;
@@ -139,12 +137,12 @@ public class MainWindow extends JFrame {
 		}
 	}
 	
-	
 	public void DisplayOrderList(){
 		JDBC jdbc = new JDBC();
 		jdbc.readOrders();
 		DefaultListModel<String> listModel = (DefaultListModel<String>) list.getModel();	
 		listModel.clear();
+		
 		for (String orderString: jdbc.readOrders()){
 			listModel.addElement(orderString);
 		}
@@ -156,7 +154,13 @@ public class MainWindow extends JFrame {
 					 int index = list.locationToIndex(event.getPoint());
 				     Object item = listModel.getElementAt(index);;
 				     list.ensureIndexIsVisible(index);
-				     System.out.println("Double clicked on " + item);
+				     int dialogResult = JOptionPane.showConfirmDialog(null, "Work on this order?");
+						if(dialogResult==JOptionPane.YES_OPTION){
+							editWorkStatus();
+						}
+						else{
+							return;
+						}
 				}
 			}	
 		});
@@ -195,12 +199,13 @@ public class MainWindow extends JFrame {
 	public void addPurchaseOrder(){
 		JDBC jdbc = new JDBC();
 		jdbc.addPurchaseOrder();
-		String option = JOptionPane.showInputDialog("Would you like to add products to a purchase order? (y/n)");
-		if (option.equals("y")){
-			addPOProducts();
+		
+		int dialogResult = JOptionPane.showConfirmDialog(null, "Add products to this purchase order?");
+		if(dialogResult==JOptionPane.NO_OPTION){
+			return;
 		}
 		else{
-			return;
+			addPOProducts();
 		}
 	}
 	
@@ -212,6 +217,12 @@ public class MainWindow extends JFrame {
 	public void changeStatus(){
 		JDBC jdbc = new JDBC();
 		jdbc.editStatus();
+	}
+	
+	public void editWorkStatus(){
+		JDBC jdbc = new JDBC();
+		
+		jdbc.editWorkStatus();
 	}
 	
 	public MainWindow() {

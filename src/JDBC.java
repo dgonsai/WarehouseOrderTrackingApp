@@ -106,7 +106,7 @@ public class JDBC {
 					String datePlaced = rs.getString("datePlaced");
 					String timePlaced = rs.getString("timePlaced");
 					String orderStatusChoice = rs.getString("orderStatus");
-					boolean workedOn = rs.getBoolean("WorkedOn?");
+					boolean workedOn = rs.getBoolean("WorkedOn");
 					
 					if(orderStatusChoice.equals("WAITINGFORPROCESS")){
 						orderStatus=WarehouseOrder.orderStatus.WAITINGFORPROCESS;
@@ -126,7 +126,7 @@ public class JDBC {
 					
 					orderList.add(new WarehouseOrder(orderId, datePlaced, timePlaced, orderStatus, workedOn));
 					
-					String order = "ID: " + Integer.toString(orderId) + ", Order Date: "+ datePlaced + ", Order Status: " + orderStatus + ", Worked On?: "+ workedOn;
+					String order = "ID: " + Integer.toString(orderId) + ", Order Date: "+ datePlaced + ", Order Status: " + orderStatus + ", Worked On: "+ workedOn;
 					orderString.add(order);
 				}
 				rs.close();
@@ -517,6 +517,69 @@ public class JDBC {
 		
 	}
 	
+	public void editWorkStatus(){
+		Connection conn = null;
+		Statement stmt = null;
+		
+		//pass double clicked value from main window class to this class
+		int orderID = Integer.parseInt(JOptionPane.showInputDialog("Please enter the order ID of the order you wish to change the status of"));
+		String status = "";
+		String sql2 = "SELECT * FROM orders WHERE orders.orderID="+orderID;
+		
+			try{
+				Class.forName("JDBC");
+				System.out.println("Connecting to NB Gardens database...");
+				conn=DriverManager.getConnection(DB_URL,USER,PASS);
+				stmt = conn.createStatement();
+				
+				System.out.println("Creating statement...");
+				stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql2);
+				
+				while (rs.next()){
+					status = rs.getString("WorkedOn");
+					if (status.equals("false")){
+						status = "true";
+					}
+					else{
+						System.out.println("This order is already being worked on!");
+						return;
+					}
+				}
+				rs.close();
+				System.out.println(status);
+				String updateStatus = "UPDATE orders SET WorkedOn ='"+status+"'WHERE OrderID ='"+ orderID+"';";
+				stmt.executeUpdate(updateStatus);
+
+				System.out.println("IT IS DONE!!!");
+				return;
+			}
+			
+			catch(SQLException sqle) {
+				sqle.printStackTrace();
+			} 
+			catch (Exception e) {
+				e.printStackTrace();
+			} 
+			finally {
+				try {
+				  if (stmt != null)
+				  conn.close();
+				} 
+				catch (SQLException se) { }
+					try {
+						if (conn != null)
+							conn.close();
+					} 
+					catch (SQLException se) {
+						se.printStackTrace();
+						System.out.println("Goodbye!");
+					}
+				  
+			}
+		
+	}
+	
 	public void addToPO(){
 
 		Connection conn = null;
@@ -574,4 +637,3 @@ public class JDBC {
 	}
 	}
 }
-
