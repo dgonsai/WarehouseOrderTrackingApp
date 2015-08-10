@@ -27,7 +27,7 @@ public class MainWindow extends JFrame {
 	//initialising and design of the main menu GUI
 	private void designGUI(){
 		mainFrame = new JFrame("Main Menu");
-		mainFrame.setSize(550, 400);
+		mainFrame.setSize(600, 400);
 		mainFrame.setLayout(new GridLayout(3,1));
 		
 		//list model used to display objects in arrays as visible strings
@@ -57,7 +57,8 @@ public class MainWindow extends JFrame {
 		
 		//declaring all of the buttons on the application
 		headerLabel.setText("NB Garden - Warehouse App");
-		JButton poListButton = new JButton("View Purchase Orders made");
+		JButton poButton = new JButton("View Purchase Orders");
+		JButton poListButton = new JButton("View Items in a Purchase Order");
 		JButton orderMenuButton = new JButton("View Items in an Order");
 		JButton orderListButton = new JButton("Order List");
 		JButton productListButton = new JButton("Product List");
@@ -66,7 +67,8 @@ public class MainWindow extends JFrame {
 		JButton changeStatus = new JButton("Change Order Status");
 				
 		//setting action commands for the switch-case statement - used to call the buttons
-		poListButton.setActionCommand("Purchase Order List");
+		poButton.setActionCommand("Purchase Order List");
+		poListButton.setActionCommand("View Items in Purchase Order");
 		orderMenuButton.setActionCommand("View Items in order");
 		orderListButton.setActionCommand("Order List");
 		productListButton.setActionCommand("Product List");
@@ -75,6 +77,7 @@ public class MainWindow extends JFrame {
 		changeStatus.setActionCommand("Change Order Status");
 				
 		//adding action listeners to the buttons - when they're clicked, the button click method is called
+		poButton.addActionListener(new ButtonClick());
 		poListButton.addActionListener(new ButtonClick());
 		orderMenuButton.addActionListener(new ButtonClick());
 		orderListButton.addActionListener(new ButtonClick());
@@ -86,6 +89,7 @@ public class MainWindow extends JFrame {
 		//adding the buttons to the JPanel
 		controlPanel.add(orderListButton);
 		controlPanel.add(productListButton);
+		controlPanel.add(poButton);
 		controlPanel.add(orderMenuButton);
 		controlPanel.add(poListButton);
 		controlPanel.add(addPOButton);
@@ -110,8 +114,12 @@ public class MainWindow extends JFrame {
 			switch (command){
 				
 				//Displaying all purchase order lines
-				case "Purchase Order List":
+				case "View Items in a Purchase Order":
 					DisplayPurchaseOrderList();
+					break;
+				
+				case "Purchase Order List":
+					DisplayPurchaseOrder();
 					break;
 					
 				//View items on an entered order
@@ -198,9 +206,20 @@ public class MainWindow extends JFrame {
 		}		
 	}
 	
-	public void DisplayPurchaseOrderList(){
+	public void DisplayPurchaseOrder(){
 		JDBC jdbc = new JDBC();
 		jdbc.readPurchaseOrder();
+		
+		DefaultListModel<String> listModel = (DefaultListModel<String>) list.getModel();	
+		listModel.clear();
+		
+		for (String poString: jdbc.readPurchaseOrder()){
+			listModel.addElement(poString);
+		}
+	}
+	public void DisplayPurchaseOrderList(){
+		JDBC jdbc = new JDBC();
+		jdbc.readPurchaseOrderLine();
 		DefaultListModel<String> listModel = (DefaultListModel<String>) list.getModel();	
 		listModel.clear();
 		for (String productString: jdbc.readPurchaseOrder()){

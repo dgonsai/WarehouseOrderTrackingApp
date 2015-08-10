@@ -1,7 +1,9 @@
 
-public class PuchaseOrder {
+public class PurchaseOrder {
 	private int purchaseOrderID;
 	private String supplierName;
+	private String delivered;
+
 	
 	public int getPurchaseID(){
 		return purchaseOrderID;
@@ -19,11 +21,19 @@ public class PuchaseOrder {
 		supplierName = supplier;
 	}
 	
-
+	public String getDelivery(){
+		return delivered;
+	}
 	
-	public PuchaseOrder(int PurchaseOrderID, String supplierName, int quantity){
+	public void setDelivery(String del){
+		delivered = del;
+	}
+	
+	
+	
+	public PurchaseOrder(int PurchaseOrderID, String supplierName, String delivered){
 		this.purchaseOrderID = PurchaseOrderID;
 		this.supplierName = supplierName;
-	
+		this.delivered = delivered;
 	}
 }

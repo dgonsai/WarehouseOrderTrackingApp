@@ -155,7 +155,58 @@ public class JDBC {
 		  }
 		 return orderString;
 	} 
+	
+	public ArrayList<String> readPurchaseOrder(){
+		Connection conn = null;
+		Statement stmt = null;
+		String sql2 = "SELECT * FROM PurchaseOrder";
 		
+		ArrayList<PurchaseOrder> poList= new ArrayList<PurchaseOrder>();
+		ArrayList<String> poString = new ArrayList<String>(0);
+		
+		try{
+			Class.forName("JDBC");
+			System.out.println("Loading order catalogue...");
+			conn=DriverManager.getConnection(DB_URL,USER,PASS);
+			stmt = conn.createStatement();
+			
+			ResultSet rs = stmt.executeQuery(sql2);
+			while (rs.next()) {
+				int poId = rs.getInt("PurchaseOrderID");
+				String supplierName = rs.getString("Supplier");
+				String delivered = rs.getString("Delivered");
+								
+				poList.add(new PurchaseOrder(poId, supplierName, delivered));
+				String purchase = "Purchase ID: " + Integer.toString(poId) + ", Supplier Name : "+ supplierName + ", Delivered?: " + delivered;
+				poString.add(purchase);
+			}
+			rs.close();
+		}
+		catch(SQLException sqle) {
+			sqle.printStackTrace();
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		} 
+		finally {
+			try {
+			  if (stmt != null)
+			  conn.close();
+			} 
+			catch (SQLException se) { }
+				try {
+					if (conn != null)
+						conn.close();
+				} 
+				catch (SQLException se) {
+					se.printStackTrace();
+					System.out.println("Goodbye!");
+				}
+		  }
+		 return poString;	
+	}
+	
+	
 	public ArrayList<String> readOrderLine(){
 
 		Connection conn = null;
@@ -274,11 +325,11 @@ public class JDBC {
 		return olList;
 	}
 	
-	public ArrayList<String> readPurchaseOrder(){
+	public ArrayList<String> readPurchaseOrderLine(){
 		Connection conn = null;
 		Statement stmt = null;
 		
-		int poID = Integer.parseInt(JOptionPane.showInputDialog("Please enter the order ID of the order you wish to see"));
+		int poID = Integer.parseInt(JOptionPane.showInputDialog("Please enter the purchase order ID of the order you wish to see"));
 		String sql2 = "SELECT * FROM poline WHERE poline.PurchaseOrderID=" + poID;
 		String sql3 = "SELECT * FROM purchaseorder WHERE poline.Orders_OrderID="+poID;
 		String sql4 = "SELECT * FROM products, poline WHERE PurchaseOrderID ="+poID+" AND poline.ProductID = products.ProductID";
