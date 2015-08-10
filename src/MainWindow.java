@@ -30,6 +30,7 @@ public class MainWindow extends JFrame {
 		mainFrame.setSize(550, 400);
 		mainFrame.setLayout(new GridLayout(3,1));
 		
+		//list model used to display objects in arrays as visible strings
 		DefaultListModel<String> listModel = new DefaultListModel<String>();
 		headerLabel = new JLabel ("",JLabel.CENTER);
 		list = new JList<String>(listModel);
@@ -42,6 +43,7 @@ public class MainWindow extends JFrame {
 			}
 		});
 		
+		//adding the previously declared list and JPanel on the JFrame and making it visible
 		controlPanel = new JPanel();
 		controlPanel.setLayout(new FlowLayout());
 		controlPanel.add(list);
@@ -52,6 +54,8 @@ public class MainWindow extends JFrame {
 	}
 	
 	private void createButtons(){
+		
+		//declaring all of the buttons on the application
 		headerLabel.setText("NB Garden - Warehouse App");
 		JButton poListButton = new JButton("View Purchase Orders made");
 		JButton orderMenuButton = new JButton("View Items in an Order");
@@ -61,6 +65,7 @@ public class MainWindow extends JFrame {
 		JButton editPOButton = new JButton("Add items to existing Purchase Order");
 		JButton changeStatus = new JButton("Change Order Status");
 				
+		//setting action commands for the switch-case statement - used to call the buttons
 		poListButton.setActionCommand("Purchase Order List");
 		orderMenuButton.setActionCommand("View Items in order");
 		orderListButton.setActionCommand("Order List");
@@ -69,6 +74,7 @@ public class MainWindow extends JFrame {
 		editPOButton.setActionCommand("Edit Purchase Order");
 		changeStatus.setActionCommand("Change Order Status");
 				
+		//adding action listeners to the buttons - when they're clicked, the button click method is called
 		poListButton.addActionListener(new ButtonClick());
 		orderMenuButton.addActionListener(new ButtonClick());
 		orderListButton.addActionListener(new ButtonClick());
@@ -77,6 +83,7 @@ public class MainWindow extends JFrame {
 		editPOButton.addActionListener(new ButtonClick());
 		changeStatus.addActionListener(new ButtonClick());
 		
+		//adding the buttons to the JPanel
 		controlPanel.add(orderListButton);
 		controlPanel.add(productListButton);
 		controlPanel.add(orderMenuButton);
@@ -85,6 +92,7 @@ public class MainWindow extends JFrame {
 		controlPanel.add(editPOButton);
 		controlPanel.add(changeStatus);
 		
+		//attempting to align the buttons on the panel
 		poListButton.setAlignmentX(LEFT_ALIGNMENT);
 		orderMenuButton.setAlignmentX(LEFT_ALIGNMENT);
 		orderListButton.setAlignmentX(LEFT_ALIGNMENT);
@@ -94,8 +102,10 @@ public class MainWindow extends JFrame {
 	}
 	
 	private class ButtonClick implements ActionListener{
+
 		@Override
 		public void actionPerformed(ActionEvent ae){
+			//the command string will get an action command based on what is clicked on the JPanel
 			String command = ae.getActionCommand();
 			switch (command){
 				
@@ -138,8 +148,10 @@ public class MainWindow extends JFrame {
 	}
 	
 	public void DisplayOrderList(){
+		//Initialising the database connection and running the method to read orders
 		JDBC jdbc = new JDBC();
 		jdbc.readOrders();
+		
 		DefaultListModel<String> listModel = (DefaultListModel<String>) list.getModel();	
 		listModel.clear();
 		

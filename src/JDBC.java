@@ -47,8 +47,10 @@ public class JDBC {
 				double width= rs.getInt("Width");
 				double depth = rs.getInt("Depth");
 				boolean porous = rs.getBoolean("Porous");
+				int xLoc = rs.getInt("XLocation");
+				int yLoc = rs.getInt("YLocation");
 														
-				productList.add(new WarehouseProduct(productId, prodName, productPrice, stock, height, width, weight, depth, porous));
+				productList.add(new WarehouseProduct(productId, prodName, productPrice, stock, height, width, weight, depth, porous, xLoc, yLoc));
 							
 		
 				String product = "ID: " + Integer.toString(productId) + ", Product Name: "+ prodName + ", Stock: " + Integer.toString(stock)+ ", Porous Wared?: "+porous;
@@ -102,35 +104,34 @@ public class JDBC {
 			
 			ResultSet rs = stmt.executeQuery(sql2);
 			while (rs.next()) {
-					int orderId = rs.getInt("OrderID");
-					String datePlaced = rs.getString("datePlaced");
-					String timePlaced = rs.getString("timePlaced");
-					String orderStatusChoice = rs.getString("orderStatus");
-					boolean workedOn = rs.getBoolean("WorkedOn");
-					
-					if(orderStatusChoice.equals("WAITINGFORPROCESS")){
-						orderStatus=WarehouseOrder.orderStatus.WAITINGFORPROCESS;
-					}
-					else if (orderStatusChoice.equals("PICKED")){
-						orderStatus=WarehouseOrder.orderStatus.PICKED;
-					}
-					else if (orderStatusChoice.equals("PACKED")){
-						orderStatus=WarehouseOrder.orderStatus.PACKED;
-					}
-					else if (orderStatusChoice.equals("DISPATCHREADY")){
-						orderStatus=WarehouseOrder.orderStatus.DISPATCHREADY;
-					}
-					else{
-						orderStatus=WarehouseOrder.orderStatus.DISPATCHED;
-					}
-					
-					orderList.add(new WarehouseOrder(orderId, datePlaced, timePlaced, orderStatus, workedOn));
-					
-					String order = "ID: " + Integer.toString(orderId) + ", Order Date: "+ datePlaced + ", Order Status: " + orderStatus + ", Worked On: "+ workedOn;
-					orderString.add(order);
+				int orderId = rs.getInt("OrderID");
+				String datePlaced = rs.getString("datePlaced");
+				String timePlaced = rs.getString("timePlaced");
+				String orderStatusChoice = rs.getString("orderStatus");
+				boolean workedOn = rs.getBoolean("WorkedOn");
+				
+				if(orderStatusChoice.equals("WAITINGFORPROCESS")){
+					orderStatus=WarehouseOrder.orderStatus.WAITINGFORPROCESS;
 				}
-				rs.close();
+				else if (orderStatusChoice.equals("PICKED")){
+					orderStatus=WarehouseOrder.orderStatus.PICKED;
+				}
+				else if (orderStatusChoice.equals("PACKED")){
+					orderStatus=WarehouseOrder.orderStatus.PACKED;
+				}
+				else if (orderStatusChoice.equals("DISPATCHREADY")){
+					orderStatus=WarehouseOrder.orderStatus.DISPATCHREADY;
+				}
+				else{
+					orderStatus=WarehouseOrder.orderStatus.DISPATCHED;
+				}
+				
+				orderList.add(new WarehouseOrder(orderId, datePlaced, timePlaced, orderStatus, workedOn));
+				String order = "ID: " + Integer.toString(orderId) + ", Order Date: "+ datePlaced + ", Order Status: " + orderStatus + ", Worked On: "+ workedOn;
+				orderString.add(order);
 			}
+			rs.close();
+		}
 		catch(SQLException sqle) {
 			sqle.printStackTrace();
 		} 
@@ -237,8 +238,10 @@ public class JDBC {
 				double width= productRS.getInt("Width");
 				double depth = productRS.getInt("Depth");
 				boolean porous = productRS.getBoolean("Porous");
+				int xLoc = productRS.getInt("XLocation");
+				int yLoc = productRS.getInt("YLocation");
 			
-				productList.add(new WarehouseProduct(productId, prodName, productPrice, stock, height, width, weight, depth, porous));
+				productList.add(new WarehouseProduct(productId, prodName, productPrice, stock, height, width, weight, depth, porous, xLoc, yLoc));
 			
 				String product = "ID: " + Integer.toString(productId) + ", Product Name: "+ prodName + ", Stock: " + Integer.toString(stock)+ ", Porous Wared?: "+porous;
 				productString.add(product);
@@ -347,8 +350,10 @@ public class JDBC {
 				double width= productRS.getInt("Width");
 				double depth = productRS.getInt("Depth");
 				boolean porous = productRS.getBoolean("Porous");
-														
-				productList.add(new WarehouseProduct(productId, prodName, productPrice, stock, height, width, weight, depth, porous));
+				int xLoc = productRS.getInt("XLocation");
+				int yLoc = productRS.getInt("YLocation");
+				
+				productList.add(new WarehouseProduct(productId, prodName, productPrice, stock, height, width, weight, depth, porous, xLoc, yLoc));
 			
 				String product = "ID: " + Integer.toString(productId) + ", Product Name: "+ prodName + ", Stock: " + Integer.toString(stock)+ ", Porous Wared?: "+porous;
 				productString.add(product);
@@ -387,7 +392,8 @@ public class JDBC {
 		int orderID = Integer.parseInt(JOptionPane.showInputDialog("Please enter the order ID of the order you wish to change the status of"));
 		String status ="";
 		String sql2 = "SELECT * FROM orders WHERE orders.orderID=" + orderID;
-		int dialogResult = JOptionPane.showConfirmDialog(null, "Would you like to move the order with order ID "+orderID+" to the next stage?");
+
+		int dialogResult = JOptionPane.showConfirmDialog(null, "Would you like to move the order with order ID "+orderID+" to the next stage?");		
 		if(dialogResult==JOptionPane.NO_OPTION){
 			return;
 		}
@@ -403,11 +409,13 @@ public class JDBC {
 				ResultSet rs = stmt.executeQuery(sql2);
 				
 				while (rs.next()){
-					status = rs.getString("orderStatus");
+					
 					System.out.println(status);
 					
 					if(status.equals("WAITINGFORPROCESS")){
 						status="PICKED";
+						stockUpdate();
+						//take away quantity of order line from stock from product
 					}
 					else if (status.equals("PICKED")){
 						status="PACKED";
@@ -417,19 +425,16 @@ public class JDBC {
 					}
 					else if (status.equals("DISPATCHREADY")){
 						status="DISPATCHED";
-						productStockUpdate();
 					}
 					else{
 						System.out.println("Order has been dispatched!");
 						return;
 					}
-					
-				}
-				rs.close();
 				
+				}
+				rs.close();		
 				String updateStatus = "UPDATE orders SET orderStatus ='"+status+"'WHERE OrderID ='"+ orderID+"';";
 				stmt.executeUpdate(updateStatus);
-
 				System.out.println("IT IS DONE!!!");
 				return;
 			}
@@ -445,7 +450,9 @@ public class JDBC {
 				  if (stmt != null)
 				  conn.close();
 				} 
-				catch (SQLException se) { }
+				catch (SQLException se) { 
+					
+				}
 					try {
 						if (conn != null)
 							conn.close();
@@ -454,10 +461,17 @@ public class JDBC {
 						se.printStackTrace();
 						System.out.println("Goodbye!");
 					}
-				  
 			}
 		}
-		}
+	}
+	
+	public void stockUpdate(){
+		Connection conn = null;
+		Statement stmt = null;
+		
+		
+		
+	}
 	
 	public void addPurchaseOrder(){
 		Connection conn = null;
@@ -511,12 +525,6 @@ public class JDBC {
 		  }
 		}
 
-	public void productStockUpdate(){
-		Connection conn = null;
-		Statement stmt = null;
-		
-	}
-	
 	public void editWorkStatus(){
 		Connection conn = null;
 		Statement stmt = null;
@@ -546,11 +554,12 @@ public class JDBC {
 						return;
 					}
 				}
+				
 				rs.close();
 				System.out.println(status);
 				String updateStatus = "UPDATE orders SET WorkedOn ='"+status+"'WHERE OrderID ='"+ orderID+"';";
 				stmt.executeUpdate(updateStatus);
-
+				
 				System.out.println("IT IS DONE!!!");
 				return;
 			}

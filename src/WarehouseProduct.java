@@ -10,6 +10,8 @@ public class WarehouseProduct {
 	private double productWeight;
 	private double productDepth;
 	private boolean productPorous;
+	private int xLoc;
+	private int yLoc;
 	ArrayList<WarehouseProduct> productList= new ArrayList<WarehouseProduct>();
 		
 	public boolean getPorous(){
@@ -84,8 +86,16 @@ public class WarehouseProduct {
 		productDepth=pDepth;
 	}
 	
+	public int getX(){
+		return xLoc;
+	}
+	
+	public void setX(int pXLocation){
+		xLoc = pXLocation;
+	}
+	
 	//constructor for product objects
-	public WarehouseProduct(int productID, String productName, double productPrice, int stockLevel, double productHeight, double productWidth, double productWeight, double productDepth, boolean productPorous){
+	public WarehouseProduct(int productID, String productName, double productPrice, int stockLevel, double productHeight, double productWidth, double productWeight, double productDepth, boolean productPorous, int xLoc, int yLoc){
 		this.productID=productID;
 		this.productName=productName;
 		this.productPrice = productPrice;
@@ -95,6 +105,8 @@ public class WarehouseProduct {
 		this.productWeight = productWeight;
 		this.productDepth= productDepth;
 		this.productPorous = productPorous;
+		this.xLoc = xLoc;
+		this.yLoc = yLoc;
 	}
 	
 	public String toString(){
