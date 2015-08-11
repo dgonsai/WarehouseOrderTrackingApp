@@ -845,9 +845,11 @@ public class JDBC {
 	public void travellingSalesperson(){
 		Connection conn = null;
 		Statement stmt = null;
+		//3 array lists used to store unv
 		ArrayList <Integer> visited = new ArrayList<Integer>();
 		visited.add(0);
-		ArrayList <Integer> unvisited  = new ArrayList<Integer>();
+		ArrayList <Integer> unvisitedX  = new ArrayList<Integer>();
+		ArrayList <Integer> unvisitedY = new ArrayList<Integer>();
 		int visitedPointer = 0;
 		
 		
@@ -866,8 +868,10 @@ public class JDBC {
 			while(productRS.next()){
 				int xLoc = productRS.getInt("XLocation");
 				int yLoc = productRS.getInt("YLocation");
-				unvisited.add(xLoc+yLoc);
-				System.out.println(unvisited.toString());
+				unvisitedX.add(xLoc);
+				unvisitedY.add(yLoc); 
+				System.out.println(unvisitedX.toString());
+				System.out.println(unvisitedY.toString());
 			}
 			productRS.close();
 		}
@@ -892,23 +896,27 @@ public class JDBC {
 					se.printStackTrace();
 					System.out.println("Goodbye!");
 				}
-		}		
-		int temporaryCounter = -1;
+		}
 		
-		while(unvisited.size()!=0){
+		int temporaryCounter = -1;	
+		while(unvisitedY.size()!=0){
 			int closestProduct = Integer.MAX_VALUE;
-			
-			for (int i=0; i< unvisited.size();i++){
-				int temp = Math.abs(unvisited.get(i)-visited.get(visitedPointer));
-				if (temp<closestProduct){
-					closestProduct = temp;
+	
+			for(int i=0; i<unvisitedY.size();i++){
+				int tempX = Math.abs(unvisitedX.get(i)-visited.get(visitedPointer));
+				int tempY = Math.abs(unvisitedY.get(i)-visited.get(visitedPointer));
+				int tempTotal = 0;
+				if(tempX<closestProduct&&tempY<closestProduct){
+					tempTotal = tempX + tempY;
+					closestProduct = tempTotal;
 					temporaryCounter = i;
+					System.out.println("ClosestProduct: " +closestProduct);
+					visited.add(closestProduct);
+					unvisitedX.remove(temporaryCounter);
+					unvisitedY.remove(temporaryCounter);
 				}
 			}
-			
-			visited.add(closestProduct);
-			unvisited.remove(temporaryCounter);
-		}
+			}
 		System.out.println(visited.toString());
+		}
 	}
-}
