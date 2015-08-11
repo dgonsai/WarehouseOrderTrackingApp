@@ -3,7 +3,11 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Scanner;
 
 import javax.swing.JOptionPane;
@@ -512,9 +516,157 @@ public class JDBC {
 	}
 	
 	public void stockUpdate(){
-		int newStock = 0;
+		Connection conn = null;
+		Statement stmt = null;
+		//String sql2 = "SELECT stockLevel FROM Products WHERE orderline.Products_ProductID= products.productID";
+		//String sql3 = "SELECT quantity FROM orderline WHERE orderline.OrderID = orders.OrderID";
 		
+		String calcStock = "SELECT orderline.orders_OrderID SUM (products.stockLevel-orderline.quantity) FROM orderline JOIN products ON products.ProductID = orderline.orders_ProductID WHERE ol.orderID = @OrderID";
+		try{
+			Class.forName("JDBC");
+			System.out.println("Connecting to NB Gardens database...");
+			conn=DriverManager.getConnection(DB_URL,USER,PASS);
+	
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(calcStock);
+			System.out.println(calcStock);
+		}
+		catch(SQLException sqle) {
+			sqle.printStackTrace();
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		} 
+		finally {
+			try {
+			  if (stmt != null)
+			  conn.close();
+			} 
+			catch (SQLException se) { }
+				try {
+					if (conn != null)
+						conn.close();
+				} 
+				catch (SQLException se) {
+					se.printStackTrace();
+					System.out.println("Goodbye!");
+				}
+		 }
+	}
+	
+	public void createOrder(){
+		Connection conn = null;
+		Statement stmt = null;
 		
+		String sql4 = "SELECT OrderID FROM orders";
+		
+		ArrayList<Integer> oArray = new ArrayList<Integer>();
+		
+		try{
+			Class.forName("JDBC");
+			System.out.println("Connecting to NB Gardens database...");
+			conn=DriverManager.getConnection(DB_URL,USER,PASS);
+	
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql4);	
+			while (rs.next()){
+				int oID = rs.getInt("OrderID");
+				oArray.add(oID);
+			}
+			
+			int OrderID = oArray.size()+1;
+			
+			DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+			Date date= new Date();
+			String datePlaced = df.format(date);
+			
+			DateFormat dateFormat = new SimpleDateFormat("hh:mm");
+	        Date time = new Date();
+	        String timePlaced=dateFormat.format(time);
+	        
+			String oStatus = "WAITINGFORPROCESS"; 
+			String workedOn = "false";
+			
+			System.out.println(OrderID);
+			stmt.executeUpdate("INSERT INTO `orders`(OrderID,datePlaced,timePlaced,orderStatus,WorkedOn) VALUE('"+OrderID+"','"+datePlaced+"','"+timePlaced+"','"+oStatus+"','"+workedOn+"')");
+			JOptionPane.showMessageDialog(null, "The ID for this order is OrderID: " + OrderID);
+			System.out.println("IT IS DONE");
+		}
+		catch(SQLException sqle) {
+			sqle.printStackTrace();
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		} 
+		finally {
+			try {
+			  if (stmt != null)
+			  conn.close();
+			} 
+			catch (SQLException se) { }
+				try {
+					if (conn != null)
+						conn.close();
+				} 
+				catch (SQLException se) {
+					se.printStackTrace();
+					System.out.println("Goodbye!");
+				}
+		 }
+	}
+	
+	public void addToOrder(){
+		Connection conn = null;
+		Statement stmt = null;
+		
+		int OrderID = Integer.parseInt(JOptionPane.showInputDialog("Please enter the order ID you wish to add products to"));
+		String ProductID = ""; 
+			
+		
+		while(!ProductID.equals("[quit]")){
+			ProductID =JOptionPane.showInputDialog("Please enter the productID of the product you wish to to this order (enter [quit] if you wish to stop adding products");
+			if (ProductID.equals("[quit]")){
+				return;
+			}
+			else{
+				int Quantity= Integer.parseInt(JOptionPane.showInputDialog("Please enter the quantity of the product you wish to acquire from this purchase order"));
+				String sql2 = "SELECT * FROM orderline WHERE orderline.PuchaseOrderID=" + OrderID;
+				
+				try{
+					Class.forName("JDBC");
+					System.out.println("Connecting to NB Gardens database...");
+					conn=DriverManager.getConnection(DB_URL,USER,PASS);
+					stmt = conn.createStatement();
+					
+					stmt.executeUpdate("INSERT INTO `orderline`(orders_OrderID,products_ProductID,Quantity) VALUE ('"+OrderID+"','"+ProductID+"','"+Quantity+"')");
+					System.out.println("IT IS DONE!!!");
+					return;
+					
+				}
+				catch(SQLException sqle) {
+					sqle.printStackTrace();
+				} 
+				catch (Exception e) {
+					e.printStackTrace();
+				} 
+				finally {
+					try {
+					  if (stmt != null)
+					  conn.close();
+					} 
+					catch (SQLException se) { }
+						try {
+							if (conn != null)
+								conn.close();
+						} 
+						catch (SQLException se) {
+							se.printStackTrace();
+							System.out.println("Goodbye!");
+						}
+					  
+				}
+		}
+	}
 	}
 	
 	public void addPurchaseOrder(){
@@ -688,5 +840,73 @@ public class JDBC {
 			}
 		}
 	}
+	}
+
+	public void travellingSalesperson(){
+		Connection conn = null;
+		Statement stmt = null;
+		ArrayList <WarehouseProduct> unvisited  = new ArrayList<WarehouseProduct>();
+		
+		int orderID = Integer.parseInt(JOptionPane.showInputDialog("Please enter the order ID of the order you wish to see"));
+		String sql4 = "SELECT * FROM products, orderline WHERE Orders_OrderID ="+orderID+" AND orderline.Products_ProductID = products.ProductID";
+		
+		try{
+			Class.forName("JDBC");
+			System.out.println("Loading order catalogue...");
+			conn=DriverManager.getConnection(DB_URL,USER,PASS);
+			System.out.println("Creating statement...");
+			stmt = conn.createStatement();
+			
+			ResultSet productRS =stmt.executeQuery(sql4);
+			
+			while(productRS.next()){
+				int productId = productRS.getInt("ProductID");
+				String prodName = productRS.getString("ProductName");
+				double  productPrice = productRS.getDouble("ProductPrice");
+				int stock = productRS.getInt("StockLevel");
+				double  height = productRS.getInt("Height");
+				double weight = productRS.getInt("Weight");
+				double width= productRS.getInt("Width");
+				double depth = productRS.getInt("Depth");
+				boolean porous = productRS.getBoolean("Porous");
+				int xLoc = productRS.getInt("XLocation");
+				int yLoc = productRS.getInt("YLocation");
+				unvisited.add(new WarehouseProduct(productId, prodName, productPrice, stock, height, width, weight, depth, porous, xLoc, yLoc));
+			}
+			productRS.close();
+		}
+		
+		catch(SQLException sqle) {
+			sqle.printStackTrace();
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		} 
+		finally {
+			try {
+			  if (stmt != null)
+			  conn.close();
+			} 
+			catch (SQLException se) { }
+				try {
+					if (conn != null)
+						conn.close();
+				} 
+				catch (SQLException se) {
+					se.printStackTrace();
+					System.out.println("Goodbye!");
+				}
+		  }
+		int x = 0;
+		int y = 0;
+		int totalDistance;
+		
+		for (int i = 0; i<unvisited.size();i++){
+			int newX = unvisited.get(i).getX() - x;
+			int newY = unvisited.get(i).getY() - y;
+			totalDistance=newX+newY;
+			System.out.println(newX+","+newY+ " - Total Distance: " + totalDistance);
+			
+		}
 	}
 }

@@ -65,7 +65,10 @@ public class MainWindow extends JFrame {
 		JButton addPOButton = new JButton("Add New Purchase Order");
 		JButton editPOButton = new JButton("Add items to existing Purchase Order");
 		JButton changeStatus = new JButton("Change Order Status");
-				
+		JButton travellingSalesperson = new JButton("Calculate route");
+		JButton createOrder = new JButton("Create Order");
+		JButton addToOrder = new JButton("Add items to existing Order");	
+		
 		//setting action commands for the switch-case statement - used to call the buttons
 		poButton.setActionCommand("Purchase Order List");
 		poListButton.setActionCommand("View Items in Purchase Order");
@@ -75,8 +78,12 @@ public class MainWindow extends JFrame {
 		addPOButton.setActionCommand("Add New Purchase Order");
 		editPOButton.setActionCommand("Edit Purchase Order");
 		changeStatus.setActionCommand("Change Order Status");
-				
+		travellingSalesperson.setActionCommand("Calculate route");
+		createOrder.setActionCommand("Add new Order");
+		addToOrder.setActionCommand("Edit Order");
+		
 		//adding action listeners to the buttons - when they're clicked, the button click method is called
+		createOrder.addActionListener(new ButtonClick());
 		poButton.addActionListener(new ButtonClick());
 		poListButton.addActionListener(new ButtonClick());
 		orderMenuButton.addActionListener(new ButtonClick());
@@ -85,8 +92,12 @@ public class MainWindow extends JFrame {
 		addPOButton.addActionListener(new ButtonClick());
 		editPOButton.addActionListener(new ButtonClick());
 		changeStatus.addActionListener(new ButtonClick());
+		addToOrder.addActionListener(new ButtonClick());
+		travellingSalesperson.addActionListener(new ButtonClick());
 		
 		//adding the buttons to the JPanel
+		controlPanel.add(createOrder);
+		controlPanel.add(addToOrder);
 		controlPanel.add(orderListButton);
 		controlPanel.add(productListButton);
 		controlPanel.add(poButton);
@@ -95,6 +106,7 @@ public class MainWindow extends JFrame {
 		controlPanel.add(addPOButton);
 		controlPanel.add(editPOButton);
 		controlPanel.add(changeStatus);
+		controlPanel.add(travellingSalesperson);
 		
 		//attempting to align the buttons on the panel
 		poListButton.setAlignmentX(LEFT_ALIGNMENT);
@@ -107,6 +119,7 @@ public class MainWindow extends JFrame {
 	
 	private class ButtonClick implements ActionListener{
 
+
 		@Override
 		public void actionPerformed(ActionEvent ae){
 			//the command string will get an action command based on what is clicked on the JPanel
@@ -114,6 +127,10 @@ public class MainWindow extends JFrame {
 			switch (command){
 				
 				//Displaying all purchase order lines
+				case "Add new Order":
+					CreateOrder();
+					break;
+				
 				case "View Items in Purchase Order":
 					DisplayPurchaseOrderList();
 					break;
@@ -146,13 +163,38 @@ public class MainWindow extends JFrame {
 				case "Edit Purchase Order":
 					addPOProducts();
 					break;
+					
+				case "Edit Order":
+					AddToOrder();
+					break;
 				
 				//Change the status of an order
 				case "Change Order Status":
 					changeStatus();
 					break;
+				
+				case "Calculate route":
+					travellingSalesperson();
+					break;
 			}
 		}
+	}
+	public void CreateOrder(){
+		JDBC jdbc = new JDBC();
+		jdbc.createOrder();
+		
+		int dialogResult = JOptionPane.showConfirmDialog(null, "Add products to this order?");
+		if(dialogResult==JOptionPane.NO_OPTION){
+			return;
+		}
+		else{
+			AddToOrder();
+		}
+	}
+	
+	public void AddToOrder(){
+		JDBC jdbc = new JDBC();
+		jdbc.addToOrder();
 	}
 	
 	public void DisplayOrderList(){
@@ -255,6 +297,11 @@ public class MainWindow extends JFrame {
 		JDBC jdbc = new JDBC();
 		
 		jdbc.editWorkStatus();
+	}
+	
+	public void travellingSalesperson(){
+		JDBC jdbc = new JDBC();
+		jdbc.travellingSalesperson();
 	}
 	
 	public MainWindow() {

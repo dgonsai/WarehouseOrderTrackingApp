@@ -94,6 +94,14 @@ public class WarehouseProduct {
 		xLoc = pXLocation;
 	}
 	
+	public int getY(){
+		return yLoc;
+	}
+	
+	public void setY(int pYLocation){
+		yLoc = pYLocation;
+	}
+	
 	//constructor for product objects
 	public WarehouseProduct(int productID, String productName, double productPrice, int stockLevel, double productHeight, double productWidth, double productWeight, double productDepth, boolean productPorous, int xLoc, int yLoc){
 		this.productID=productID;
