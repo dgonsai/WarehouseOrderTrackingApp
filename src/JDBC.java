@@ -129,7 +129,7 @@ public class JDBC {
 				}
 				
 				orderList.add(new WarehouseOrder(orderId, datePlaced, timePlaced, orderStatus, workedOn));
-				String order = "ID: " + Integer.toString(orderId) + ", Order Date: "+ datePlaced + ", Order Status: " + orderStatus + ", Worked On: "+ workedOn;
+				String order = "Order ID: " + Integer.toString(orderId) + ", Order Date: "+ datePlaced + ", Order Status: " + orderStatus + ", Worked On: "+ workedOn;
 				orderString.add(order);
 			}
 			rs.close();
@@ -845,7 +845,11 @@ public class JDBC {
 	public void travellingSalesperson(){
 		Connection conn = null;
 		Statement stmt = null;
-		ArrayList <WarehouseProduct> unvisited  = new ArrayList<WarehouseProduct>();
+		ArrayList <Integer> visited = new ArrayList<Integer>();
+		visited.add(0);
+		ArrayList <Integer> unvisited  = new ArrayList<Integer>();
+		int visitedPointer = 0;
+		
 		
 		int orderID = Integer.parseInt(JOptionPane.showInputDialog("Please enter the order ID of the order you wish to see"));
 		String sql4 = "SELECT * FROM products, orderline WHERE Orders_OrderID ="+orderID+" AND orderline.Products_ProductID = products.ProductID";
@@ -860,18 +864,10 @@ public class JDBC {
 			ResultSet productRS =stmt.executeQuery(sql4);
 			
 			while(productRS.next()){
-				int productId = productRS.getInt("ProductID");
-				String prodName = productRS.getString("ProductName");
-				double  productPrice = productRS.getDouble("ProductPrice");
-				int stock = productRS.getInt("StockLevel");
-				double  height = productRS.getInt("Height");
-				double weight = productRS.getInt("Weight");
-				double width= productRS.getInt("Width");
-				double depth = productRS.getInt("Depth");
-				boolean porous = productRS.getBoolean("Porous");
 				int xLoc = productRS.getInt("XLocation");
 				int yLoc = productRS.getInt("YLocation");
-				unvisited.add(new WarehouseProduct(productId, prodName, productPrice, stock, height, width, weight, depth, porous, xLoc, yLoc));
+				unvisited.add(xLoc+yLoc);
+				System.out.println(unvisited.toString());
 			}
 			productRS.close();
 		}
@@ -896,17 +892,23 @@ public class JDBC {
 					se.printStackTrace();
 					System.out.println("Goodbye!");
 				}
-		  }
-		int x = 0;
-		int y = 0;
-		int totalDistance;
+		}		
+		int temporaryCounter = -1;
 		
-		for (int i = 0; i<unvisited.size();i++){
-			int newX = unvisited.get(i).getX() - x;
-			int newY = unvisited.get(i).getY() - y;
-			totalDistance=newX+newY;
-			System.out.println(newX+","+newY+ " - Total Distance: " + totalDistance);
+		while(unvisited.size()!=0){
+			int closestProduct = Integer.MAX_VALUE;
 			
+			for (int i=0; i< unvisited.size();i++){
+				int temp = Math.abs(unvisited.get(i)-visited.get(visitedPointer));
+				if (temp<closestProduct){
+					closestProduct = temp;
+					temporaryCounter = i;
+				}
+			}
+			
+			visited.add(closestProduct);
+			unvisited.remove(temporaryCounter);
 		}
+		System.out.println(visited.toString());
 	}
 }
