@@ -898,25 +898,33 @@ public class JDBC {
 				}
 		}
 		
-		int temporaryCounter = -1;	
+		int temporaryCounter = -1;	//counter to remove items from the array lists
+		
+		//algorithm done while size of one of the arrays is zero
+		//both arrays are the same size as each product has a pair of co-ordinates, so this should not be an issue
+		
 		while(unvisitedY.size()!=0){
-			int closestProduct = Integer.MAX_VALUE;
-	
+			int closestProduct = Integer.MAX_VALUE; //max value declaration - used when comparing values in the arrays
+			
+			//going through all of the array items
 			for(int i=0; i<unvisitedY.size();i++){
+				//storing a value calculated from the absolute value of position 0 of the visited array taken away from the x/y location of a product
 				int tempX = Math.abs(unvisitedX.get(i)-visited.get(visitedPointer));
 				int tempY = Math.abs(unvisitedY.get(i)-visited.get(visitedPointer));
-				int tempTotal = 0;
+				//int tempTotal = 0;
+				
 				if(tempX<closestProduct&&tempY<closestProduct){
-					tempTotal = tempX + tempY;
-					closestProduct = tempTotal;
+					//tempTotal = tempX + tempY;
+					//closestProduct = tempTotal;
 					temporaryCounter = i;
-					System.out.println("ClosestProduct: " +closestProduct);
+					System.out.println("Product you should get first/next is located at: " +tempX + ","+tempY);
+					
 					visited.add(closestProduct);
 					unvisitedX.remove(temporaryCounter);
 					unvisitedY.remove(temporaryCounter);
 				}
 			}
 			}
-		System.out.println(visited.toString());
+		//JOptionPane.showMessageDialog(null, visited.toString());
 		}
 	}
