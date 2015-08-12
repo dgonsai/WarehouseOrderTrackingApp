@@ -26,7 +26,7 @@ public class MainWindow extends JFrame {
 	//initialising and design of the main menu GUI
 	private void designGUI(){
 		mainFrame = new JFrame("Main Menu");
-		mainFrame.setSize(600, 500);
+		mainFrame.setSize(600, 519);
 		headerLabel = new JLabel ("",JLabel.CENTER);
 		headerLabel.setBounds(0, 1, 584, 92);
 		
@@ -44,7 +44,7 @@ public class MainWindow extends JFrame {
 		
 		//adding the previously declared list and JPanel on the JFrame and making it visible
 		controlPanel = new JPanel();
-		controlPanel.setBounds(0, 75, 584, 387);
+		controlPanel.setBounds(0, 75, 584, 406);
 		controlPanel.setLayout(null);
 		controlPanel.add(scrollPane);
 		list = new JList<String>(listModel);
@@ -86,6 +86,8 @@ public class MainWindow extends JFrame {
 		createOrder.setBounds(28, 169, 159, 23);
 		JButton addToOrder = new JButton("Add items to existing Order");
 		addToOrder.setBounds(28, 237, 163, 23);
+		JButton removeStock = new JButton("Remove stock");
+		removeStock.setBounds(126, 372, 328, 23);
 		
 		//setting action commands for the switch-case statement - used to call the buttons
 		poButton.setActionCommand("Purchase Order List");
@@ -100,6 +102,7 @@ public class MainWindow extends JFrame {
 		createOrder.setActionCommand("Add new Order");
 		addToOrder.setActionCommand("Edit Order");
 		changePOStatus.setActionCommand("Change PO status");
+		removeStock.setActionCommand("Remove stock");
 		
 		//adding action listeners to the buttons - when they're clicked, the button click method is called
 		createOrder.addActionListener(new ButtonClick());
@@ -114,6 +117,7 @@ public class MainWindow extends JFrame {
 		addToOrder.addActionListener(new ButtonClick());
 		travellingSalesperson.addActionListener(new ButtonClick());
 		changePOStatus.addActionListener(new ButtonClick());
+		removeStock.addActionListener(new ButtonClick());
 		
 		//adding the buttons to the JPanel
 		controlPanel.add(createOrder);
@@ -128,6 +132,7 @@ public class MainWindow extends JFrame {
 		controlPanel.add(changeStatus);
 		controlPanel.add(changePOStatus);
 		controlPanel.add(travellingSalesperson);
+		controlPanel.add(removeStock);
 		
 		//attempting to align the buttons on the panel
 		poListButton.setAlignmentX(LEFT_ALIGNMENT);
@@ -200,6 +205,10 @@ public class MainWindow extends JFrame {
 				
 				case "Change PO status":
 					changePOStatus();
+					break;
+				
+				case "Remove stock":
+					removeStock();
 					break;
 			}
 		}
@@ -311,6 +320,11 @@ public class MainWindow extends JFrame {
 	public void addPOProducts(){
 		JDBC jdbc = new JDBC();
 		jdbc.addToPO();
+	}
+	
+	public void removeStock(){
+		JDBC jdbc = new JDBC();
+		jdbc.removeStock();
 	}
 	
 	public void changeStatus(){

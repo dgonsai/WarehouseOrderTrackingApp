@@ -532,7 +532,6 @@ public class JDBC {
 		}
 	}
 	
-
 	public void editPOStatus(){
 		Connection conn = null;
 		Statement stmt = null;
@@ -618,6 +617,62 @@ public class JDBC {
 		}
 	}
 	
+	public void removeStock(){
+		Connection conn = null;
+		Statement stmt = null;
+		int newStockLevel=0;
+		int productID = Integer.parseInt(JOptionPane.showInputDialog("Please enter the product ID of the product you wish to remove stock from"));
+		String status = "";
+		String sql2 = "SELECT * FROM products WHERE products.productID="+productID;
+		int quantity = Integer.parseInt(JOptionPane.showInputDialog("Please enter the quantity you wish to remove from this product"));
+			try{
+				Class.forName("JDBC");
+				System.out.println("Connecting to NB Gardens database...");
+				conn=DriverManager.getConnection(DB_URL,USER,PASS);
+				stmt = conn.createStatement();
+				
+				System.out.println("Creating statement...");
+				stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql2);
+				
+				while (rs.next()){
+					int stock = rs.getInt("StockLevel");
+					newStockLevel = stock-quantity;
+				}
+				
+				rs.close();
+				System.out.println(status);
+				String updateStatus = "UPDATE products SET StockLevel ='"+newStockLevel+"'WHERE ProductID ='"+ productID+"';";
+				stmt.executeUpdate(updateStatus);
+				
+				System.out.println("IT IS DONE!!!");
+				return;
+			}
+			
+			catch(SQLException sqle) {
+				sqle.printStackTrace();
+			} 
+			catch (Exception e) {
+				e.printStackTrace();
+			} 
+			finally {
+				try {
+				  if (stmt != null)
+				  conn.close();
+				} 
+				catch (SQLException se) { }
+					try {
+						if (conn != null)
+							conn.close();
+					} 
+					catch (SQLException se) {
+						se.printStackTrace();
+						System.out.println("Goodbye!");
+					}
+				  
+			}
+		
+	}
 	
 	public void createOrder(){
 		Connection conn = null;
@@ -680,7 +735,6 @@ public class JDBC {
 		 }
 	}
 	
-	
 	public void addToOrder(){
 		Connection conn = null;
 		Statement stmt = null;
@@ -734,7 +788,6 @@ public class JDBC {
 	}
 	}
 	
-	
 	public void addPurchaseOrder(){
 		Connection conn = null;
 		Statement stmt = null;
@@ -787,7 +840,6 @@ public class JDBC {
 		 }
 	}
 	
-
 	public void editWorkStatus(){
 		Connection conn = null;
 		Statement stmt = null;
@@ -851,7 +903,6 @@ public class JDBC {
 		
 	}
 	
-	
 	public void addToPO(){
 
 		Connection conn = null;
@@ -906,7 +957,6 @@ public class JDBC {
 		}
 	}
 	}
-	
 
 	public ArrayList<String> travellingSalesperson(){
 		Connection conn = null;
