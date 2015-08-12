@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -26,16 +27,15 @@ public class MainWindow extends JFrame {
 	private void designGUI(){
 		mainFrame = new JFrame("Main Menu");
 		mainFrame.setSize(600, 500);
-		mainFrame.setLayout(new GridLayout(3,1));
+		headerLabel = new JLabel ("",JLabel.CENTER);
+		headerLabel.setBounds(0, 1, 584, 92);
 		
 		//list model used to display objects in arrays as visible strings
 		DefaultListModel<String> listModel = new DefaultListModel<String>();
-		headerLabel = new JLabel ("",JLabel.CENTER);
-		list = new JList<String>(listModel);
-		//JScrollPane scrollPane = new JScrollPane();
-		add (new JScrollPane(list));
-		list.setVisibleRowCount(4);
-				
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(28, 11, 521, 139);
+	
+		
 		mainFrame.addWindowListener(new WindowAdapter(){
 			public void WindowClose(WindowEvent windowEvent){
 				System.exit(0);
@@ -44,30 +44,48 @@ public class MainWindow extends JFrame {
 		
 		//adding the previously declared list and JPanel on the JFrame and making it visible
 		controlPanel = new JPanel();
-		controlPanel.setLayout(new FlowLayout());
-		controlPanel.add(list);
-		mainFrame.add(list);
-		mainFrame.add(headerLabel);
-		mainFrame.add(controlPanel);
+		controlPanel.setBounds(0, 75, 584, 387);
+		controlPanel.setLayout(null);
+		controlPanel.add(scrollPane);
+		list = new JList<String>(listModel);
+		scrollPane.setViewportView(list);
+		list.setVisibleRowCount(4);
+		mainFrame.getContentPane().setLayout(null);
+		//controlPanel.add(list);
+		//mainFrame.add(list);
+		mainFrame.getContentPane().add(headerLabel);
+		mainFrame.getContentPane().add(controlPanel);
 		mainFrame.setVisible(true);
 	}
 	
 	private void createButtons(){
 		
-		//declaring all of the buttons on the application
+		//declaring all of the buttons on the application and setting the bounds on the form
 		headerLabel.setText("NB Garden - Warehouse App");
 		JButton poButton = new JButton("Purchase Order List");
+		poButton.setBounds(197, 237, 159, 23);
 		JButton poListButton = new JButton("View Items in a Purchase Order");
+		poListButton.setBounds(126, 336, 328, 23);
 		JButton orderMenuButton = new JButton("View Items in an Order");
+		orderMenuButton.setBounds(366, 237, 177, 23);
 		JButton orderListButton = new JButton("Order List");
+		orderListButton.setBounds(197, 203, 159, 23);
 		JButton productListButton = new JButton("Product List");
+		productListButton.setBounds(197, 169, 159, 23);
 		JButton addPOButton = new JButton("Add New Purchase Order");
+		addPOButton.setBounds(28, 203, 159, 23);
 		JButton editPOButton = new JButton("Add items to existing Purchase Order");
+		editPOButton.setBounds(126, 271, 328, 23);
 		JButton changeStatus = new JButton("Change Order Status");
+		changeStatus.setBounds(366, 203, 177, 23);
 		JButton changePOStatus = new JButton("Confirm Purchase Order as delivered");
+		changePOStatus.setBounds(126, 302, 328, 23);
 		JButton travellingSalesperson = new JButton("Calculate route");
+		travellingSalesperson.setBounds(366, 169, 177, 23);
 		JButton createOrder = new JButton("Create Order");
-		JButton addToOrder = new JButton("Add items to existing Order");	
+		createOrder.setBounds(28, 169, 159, 23);
+		JButton addToOrder = new JButton("Add items to existing Order");
+		addToOrder.setBounds(28, 237, 163, 23);
 		
 		//setting action commands for the switch-case statement - used to call the buttons
 		poButton.setActionCommand("Purchase Order List");
@@ -313,6 +331,13 @@ public class MainWindow extends JFrame {
 	public void travellingSalesperson(){
 		JDBC jdbc = new JDBC();
 		jdbc.travellingSalesperson();
+		
+		DefaultListModel<String> listModel = (DefaultListModel<String>) list.getModel();	
+		listModel.clear();
+		
+		for (String visitList: jdbc.travellingSalesperson()){
+			listModel.addElement(visitList);
+		}
 	}
 	
 	public MainWindow() {

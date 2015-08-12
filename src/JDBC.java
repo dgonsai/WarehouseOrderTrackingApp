@@ -234,9 +234,7 @@ public class JDBC {
 				int orderId = rs.getInt("Orders_OrderID");
 				int productId = rs.getInt("Products_ProductID");
 				int quantity = rs.getInt("Quantity");
-			
-				//String productSQL = "SELECT productPrice FROM Products WHERE orderline.Products_ProductID = Products.productID";
-				
+					
 				orderLineList.add(new WarehouseOrderLine(orderId, productId, quantity));
 				System.out.println("Order ID: " + orderId + ", Product ID: " + productId + ", Quantity: " + quantity);
 				String orderLine = "Order ID: " + Integer.toString(orderId) + ", Product ID: "+ Integer.toString(productId) + ", Quantity: " + Integer.toString(quantity);
@@ -478,7 +476,6 @@ public class JDBC {
 						newStockLevels.add(newLevel);
 						productID.add(prodId);
 						olProductID.add(orderlineProductID);
-						//stmt2.executeUpdate("UPDATE products SET StockLevel ='"+newLevel+"'WHERE 'orderline.Products_ProductID' ='"+String.valueOf(prodId)+ "';");
 					}
 					
 					else if (status.equals("PICKED")){
@@ -581,7 +578,6 @@ public class JDBC {
 					newStockLevels.add(newLevel);
 					productID.add(prodId);
 					purchaseOrderProdID.add(poProductID);
-					//stmt2.executeUpdate("UPDATE products SET StockLevel ='"+newLevel+"'WHERE 'orderline.Products_ProductID' ='"+String.valueOf(prodId)+ "';");
 					}
 					rs.close();
 					System.out.println(newStockLevels.toString());
@@ -700,7 +696,6 @@ public class JDBC {
 			}
 			else{
 				int Quantity= Integer.parseInt(JOptionPane.showInputDialog("Please enter the quantity of the product you wish to acquire from this purchase order"));
-				//String sql2 = "SELECT * FROM orderline WHERE orderline.PuchaseOrderID=" + OrderID;
 				
 				try{
 					Class.forName("JDBC");
@@ -797,7 +792,6 @@ public class JDBC {
 		Connection conn = null;
 		Statement stmt = null;
 		
-		//pass double clicked value from main window class to this class
 		int orderID = Integer.parseInt(JOptionPane.showInputDialog("Please enter the order ID of the order you wish to change the status of"));
 		String status = "";
 		String sql2 = "SELECT * FROM orders WHERE orders.orderID="+orderID;
@@ -873,10 +867,8 @@ public class JDBC {
 				return;
 			}
 			else{
-				
 			
 			int Quantity= Integer.parseInt(JOptionPane.showInputDialog("Please enter the quantity of the product you wish to acquire from this purchase order"));
-			//String sql2 = "SELECT * FROM POLine WHERE POLine.PuchaseOrderID=" + PurchaseOrderID;
 			
 			try{
 				Class.forName("JDBC");
@@ -916,14 +908,15 @@ public class JDBC {
 	}
 	
 
-	public void travellingSalesperson(){
+	public ArrayList<String> travellingSalesperson(){
 		Connection conn = null;
 		Statement stmt = null;
-		//3 array lists used to store unvisited x/y co-ordinates and visited points
 		ArrayList <Integer> visited = new ArrayList<Integer>();
 		visited.add(0);
 		ArrayList <Integer> unvisitedX  = new ArrayList<Integer>();
 		ArrayList <Integer> unvisitedY = new ArrayList<Integer>();
+		
+		ArrayList <String> visitList = new ArrayList<String>();
 		int visitedPointer = 0;
 		
 		
@@ -985,20 +978,17 @@ public class JDBC {
 				//storing a value calculated from the absolute value of position 0 of the visited array taken away from the x/y location of a product
 				int tempX = Math.abs(unvisitedX.get(i)-visited.get(visitedPointer));
 				int tempY = Math.abs(unvisitedY.get(i)-visited.get(visitedPointer));
-				//int tempTotal = 0;
+			
 				
 				if(tempX<closestProduct&&tempY<closestProduct){
-					//tempTotal = tempX + tempY;
-					//closestProduct = tempTotal;
 					temporaryCounter = i;
-					System.out.println("Product you should get first/next is located at: " +tempX + ","+tempY);
-					
+					visitList.add("Product you should get first/next is located at: " +String.valueOf(tempX) + ","+String.valueOf(tempY));
 					visited.add(closestProduct);
 					unvisitedX.remove(temporaryCounter);
 					unvisitedY.remove(temporaryCounter);
 				}
 			}
 			}
-		//JOptionPane.showMessageDialog(null, visited.toString());
-		}
+			return visitList;		
+			}
 	}
