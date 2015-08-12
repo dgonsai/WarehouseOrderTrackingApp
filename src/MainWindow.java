@@ -6,8 +6,6 @@ import javax.swing.JLabel;
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -22,18 +20,19 @@ public class MainWindow extends JFrame {
 	private JFrame mainFrame;
 	private JLabel headerLabel;
 	private JPanel controlPanel;
-	private JList list;
+	private JList<String> list;
 		
 	//initialising and design of the main menu GUI
 	private void designGUI(){
 		mainFrame = new JFrame("Main Menu");
-		mainFrame.setSize(600, 400);
+		mainFrame.setSize(600, 500);
 		mainFrame.setLayout(new GridLayout(3,1));
 		
 		//list model used to display objects in arrays as visible strings
 		DefaultListModel<String> listModel = new DefaultListModel<String>();
 		headerLabel = new JLabel ("",JLabel.CENTER);
 		list = new JList<String>(listModel);
+		//JScrollPane scrollPane = new JScrollPane();
 		add (new JScrollPane(list));
 		list.setVisibleRowCount(4);
 				
@@ -65,6 +64,7 @@ public class MainWindow extends JFrame {
 		JButton addPOButton = new JButton("Add New Purchase Order");
 		JButton editPOButton = new JButton("Add items to existing Purchase Order");
 		JButton changeStatus = new JButton("Change Order Status");
+		JButton changePOStatus = new JButton("Confirm Purchase Order as delivered");
 		JButton travellingSalesperson = new JButton("Calculate route");
 		JButton createOrder = new JButton("Create Order");
 		JButton addToOrder = new JButton("Add items to existing Order");	
@@ -81,6 +81,7 @@ public class MainWindow extends JFrame {
 		travellingSalesperson.setActionCommand("Calculate route");
 		createOrder.setActionCommand("Add new Order");
 		addToOrder.setActionCommand("Edit Order");
+		changePOStatus.setActionCommand("Change PO status");
 		
 		//adding action listeners to the buttons - when they're clicked, the button click method is called
 		createOrder.addActionListener(new ButtonClick());
@@ -94,6 +95,7 @@ public class MainWindow extends JFrame {
 		changeStatus.addActionListener(new ButtonClick());
 		addToOrder.addActionListener(new ButtonClick());
 		travellingSalesperson.addActionListener(new ButtonClick());
+		changePOStatus.addActionListener(new ButtonClick());
 		
 		//adding the buttons to the JPanel
 		controlPanel.add(createOrder);
@@ -106,6 +108,7 @@ public class MainWindow extends JFrame {
 		controlPanel.add(addPOButton);
 		controlPanel.add(editPOButton);
 		controlPanel.add(changeStatus);
+		controlPanel.add(changePOStatus);
 		controlPanel.add(travellingSalesperson);
 		
 		//attempting to align the buttons on the panel
@@ -175,6 +178,10 @@ public class MainWindow extends JFrame {
 				
 				case "Calculate route":
 					travellingSalesperson();
+					break;
+				
+				case "Change PO status":
+					changePOStatus();
 					break;
 			}
 		}
@@ -293,9 +300,13 @@ public class MainWindow extends JFrame {
 		jdbc.editStatus();
 	}
 	
+	public void changePOStatus(){
+		JDBC jdbc = new JDBC();
+		jdbc.editPOStatus();
+	}
+	
 	public void editWorkStatus(){
 		JDBC jdbc = new JDBC();
-		
 		jdbc.editWorkStatus();
 	}
 	

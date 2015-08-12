@@ -6,9 +6,8 @@ import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Scanner;
+
 
 import javax.swing.JOptionPane;
 
@@ -117,6 +116,7 @@ public class JDBC {
 				}
 				else if (orderStatusChoice.equals("PICKED")){
 					orderStatus=WarehouseOrder.orderStatus.PICKED;
+					
 				}
 				else if (orderStatusChoice.equals("PACKED")){
 					orderStatus=WarehouseOrder.orderStatus.PACKED;
@@ -214,12 +214,7 @@ public class JDBC {
 		Statement stmt = null;
 		
 		int orderID = Integer.parseInt(JOptionPane.showInputDialog("Please enter the order ID of the order you wish to see"));
-		String sql2 = "SELECT * FROM orderline WHERE orderline.Orders_OrderID=" + orderID;
-		
-		//String sql = "SELECT A.Orders_OrderID, B.Products_ProductID, C.Quantity, D. ProductName, E.ProductPrice FROM orderline B INNER JOIN products D IN D.ProductID = B.Products_ProductID INNER JOIN products E IN E.ProductID = Products_ProductID WHERE orderline.Orders_OrderID=" + orderID;
-				
-		
-		String sql3 = "SELECT * FROM Orders WHERE orderline.Orders_OrderID="+orderID;
+		String sql2 = "SELECT * FROM orderline WHERE orderline.Orders_OrderID=" + orderID;			
 		String sql4 = "SELECT * FROM products, orderline WHERE Orders_OrderID ="+orderID+" AND orderline.Products_ProductID = products.ProductID";
 				
 		ArrayList<WarehouseProduct> productList = new ArrayList<WarehouseProduct>();
@@ -332,7 +327,6 @@ public class JDBC {
 		
 		int poID = Integer.parseInt(JOptionPane.showInputDialog("Please enter the purchase order ID of the order you wish to see"));
 		String sql2 = "SELECT * FROM poline WHERE poline.PurchaseOrderID=" + poID;
-		String sql3 = "SELECT * FROM purchaseorder WHERE poline.Orders_OrderID="+poID;
 		String sql4 = "SELECT * FROM products, poline WHERE PurchaseOrderID ="+poID+" AND poline.ProductID = products.ProductID";
 				
 		ArrayList<PurchaseOrderLine> poLineList= new ArrayList<PurchaseOrderLine>();	
@@ -441,11 +435,20 @@ public class JDBC {
 	public void editStatus(){
 		Connection conn = null;
 		Statement stmt = null;
+		Statement stmt2 = null;
+		int newLevel=0;
+		int prodId =0;
+		int orderlineProductID = 0;
 		int orderID = Integer.parseInt(JOptionPane.showInputDialog("Please enter the order ID of the order you wish to change the status of"));
+		ArrayList<Integer> newStockLevels = new ArrayList<Integer>();
+		ArrayList<Integer> productID = new ArrayList<Integer>();
+		ArrayList<Integer> olProductID = new ArrayList<Integer>();
+
 		String status ="";
-		String sql2 = "SELECT * FROM orders WHERE orders.orderID=" + orderID;
+		String sql2 = "SELECT * FROM orders, products, orderline WHERE orders.orderID=" + orderID + " AND orderline.products_productID = products.productID AND orderline.orders_orderID = " +orderID;
 		
 		int dialogResult = JOptionPane.showConfirmDialog(null, "Would you like to move the order with order ID "+orderID+" to the next stage?");		
+		
 		if(dialogResult==JOptionPane.NO_OPTION){
 			return;
 		}
@@ -454,19 +457,30 @@ public class JDBC {
 				Class.forName("JDBC");
 				System.out.println("Connecting to NB Gardens database...");
 				conn=DriverManager.getConnection(DB_URL,USER,PASS);
-				stmt = conn.createStatement();
-				
 				System.out.println("Creating statement...");
 				stmt = conn.createStatement();
+				stmt2 = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(sql2);
 				
 				while (rs.next()){
 					status = rs.getString("orderStatus");
 					if(status.equals("WAITINGFORPROCESS")){
 						status="PICKED";
-						//stockUpdate();
-						//take away quantity of order line from stock from product
+						prodId = rs.getInt("products.ProductID");
+						orderlineProductID = rs.getInt("orderline.products_ProductID");
+						int stock= rs.getInt("StockLevel");
+						int quantity = rs.getInt("quantity");
+						newLevel = stock - quantity;
+						System.out.println("Product ID: "+prodId);
+						System.out.println("Stock level: "+stock);
+						System.out.println("Quantity: "+ quantity);
+						System.out.println("New Level: "+ newLevel);
+						newStockLevels.add(newLevel);
+						productID.add(prodId);
+						olProductID.add(orderlineProductID);
+						//stmt2.executeUpdate("UPDATE products SET StockLevel ='"+newLevel+"'WHERE 'orderline.Products_ProductID' ='"+String.valueOf(prodId)+ "';");
 					}
+					
 					else if (status.equals("PICKED")){
 						status="PACKED";
 					}
@@ -482,9 +496,15 @@ public class JDBC {
 					}
 				}
 				rs.close();
-				
+				System.out.println(newStockLevels.toString());
 				String updateStatus = "UPDATE orders SET orderStatus ='"+status+"'WHERE OrderID ='"+ orderID+"';";
 				stmt.executeUpdate(updateStatus);
+				
+				for (int i = 0; i<newStockLevels.size();i++){
+					stmt2.executeUpdate("UPDATE products SET StockLevel ='"+newStockLevels.get(i)+ "' WHERE ProductID ='"+productID.get(i)+"';");
+				}
+				
+				
 				System.out.println("IT IS DONE!!!");
 				return;
 			}
@@ -515,44 +535,93 @@ public class JDBC {
 		}
 	}
 	
-	public void stockUpdate(){
+
+	public void editPOStatus(){
 		Connection conn = null;
 		Statement stmt = null;
-		//String sql2 = "SELECT stockLevel FROM Products WHERE orderline.Products_ProductID= products.productID";
-		//String sql3 = "SELECT quantity FROM orderline WHERE orderline.OrderID = orders.OrderID";
+		Statement stmt2 = null;
+		int newLevel=0;
+		int prodId =0;
+		int poProductID = 0;
+		int poID = Integer.parseInt(JOptionPane.showInputDialog("Please enter the purhcase order ID of the order you wish to change the status of"));
+		ArrayList<Integer> newStockLevels = new ArrayList<Integer>();
+		ArrayList<Integer> productID = new ArrayList<Integer>();
+		ArrayList<Integer> purchaseOrderProdID = new ArrayList<Integer>();
+
+		String status ="";
+		String sql2 = "SELECT * FROM PurchaseOrder, products, poline WHERE purchaseOrder.PurchaseOrderID=" + poID + " AND poline.productID = products.productID AND poline.PurchaseOrderID = " +poID;
 		
-		String calcStock = "SELECT orderline.orders_OrderID SUM (products.stockLevel-orderline.quantity) FROM orderline JOIN products ON products.ProductID = orderline.orders_ProductID WHERE ol.orderID = @OrderID";
-		try{
-			Class.forName("JDBC");
-			System.out.println("Connecting to NB Gardens database...");
-			conn=DriverManager.getConnection(DB_URL,USER,PASS);
-	
-			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(calcStock);
-			System.out.println(calcStock);
+		int dialogResult = JOptionPane.showConfirmDialog(null, "Would you like to declare the puchase order with purchase order ID "+poID+" to delivered?");		
+		
+		if(dialogResult==JOptionPane.NO_OPTION){
+			return;
 		}
-		catch(SQLException sqle) {
-			sqle.printStackTrace();
-		} 
-		catch (Exception e) {
-			e.printStackTrace();
-		} 
-		finally {
-			try {
-			  if (stmt != null)
-			  conn.close();
-			} 
-			catch (SQLException se) { }
-				try {
-					if (conn != null)
-						conn.close();
-				} 
-				catch (SQLException se) {
-					se.printStackTrace();
-					System.out.println("Goodbye!");
+		else{
+			try{
+				Class.forName("JDBC");
+				System.out.println("Connecting to NB Gardens database...");
+				conn=DriverManager.getConnection(DB_URL,USER,PASS);
+				System.out.println("Creating statement...");
+				stmt = conn.createStatement();
+				stmt2 = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql2);
+				
+				while (rs.next()){
+
+					status="true";
+					prodId = rs.getInt("products.ProductID");
+					poProductID = rs.getInt("poline.ProductID");
+					int stock= rs.getInt("StockLevel");
+					int quantity = rs.getInt("quantity");
+					newLevel = stock + quantity;
+					System.out.println("Product ID: "+prodId);
+					System.out.println("Stock level: "+stock);
+					System.out.println("Quantity: "+ quantity);
+					System.out.println("New Level: "+ newLevel);
+					newStockLevels.add(newLevel);
+					productID.add(prodId);
+					purchaseOrderProdID.add(poProductID);
+					//stmt2.executeUpdate("UPDATE products SET StockLevel ='"+newLevel+"'WHERE 'orderline.Products_ProductID' ='"+String.valueOf(prodId)+ "';");
+					}
+					rs.close();
+					System.out.println(newStockLevels.toString());
+					String updateStatus = "UPDATE PurchaseOrder SET Delivered ='"+status+"'WHERE PurchaseOrderID ='"+ poID+"';";
+					stmt.executeUpdate(updateStatus);
+				
+					for (int i = 0; i<newStockLevels.size();i++){
+						stmt2.executeUpdate("UPDATE products SET StockLevel ='"+newStockLevels.get(i)+ "' WHERE ProductID ='"+productID.get(i)+"';");
+					}
+				
+				
+				System.out.println("IT IS DONE!!!");
+				return;
 				}
-		 }
+			catch(SQLException sqle) {
+				sqle.printStackTrace();
+			} 
+			catch (Exception e) {
+				e.printStackTrace();
+			} 
+			finally {
+				try {
+				  if (stmt != null)
+				  conn.close();
+				} 
+				catch (SQLException se) { 
+					
+				}
+					try {
+						if (conn != null)
+							conn.close();
+					} 
+					catch (SQLException se) {
+						se.printStackTrace();
+						System.out.println("Goodbye!");
+					}
+			}		
+		}
 	}
+	
 	
 	public void createOrder(){
 		Connection conn = null;
@@ -615,6 +684,7 @@ public class JDBC {
 		 }
 	}
 	
+	
 	public void addToOrder(){
 		Connection conn = null;
 		Statement stmt = null;
@@ -630,7 +700,7 @@ public class JDBC {
 			}
 			else{
 				int Quantity= Integer.parseInt(JOptionPane.showInputDialog("Please enter the quantity of the product you wish to acquire from this purchase order"));
-				String sql2 = "SELECT * FROM orderline WHERE orderline.PuchaseOrderID=" + OrderID;
+				//String sql2 = "SELECT * FROM orderline WHERE orderline.PuchaseOrderID=" + OrderID;
 				
 				try{
 					Class.forName("JDBC");
@@ -668,6 +738,7 @@ public class JDBC {
 		}
 	}
 	}
+	
 	
 	public void addPurchaseOrder(){
 		Connection conn = null;
@@ -720,6 +791,7 @@ public class JDBC {
 				}
 		 }
 	}
+	
 
 	public void editWorkStatus(){
 		Connection conn = null;
@@ -729,7 +801,7 @@ public class JDBC {
 		int orderID = Integer.parseInt(JOptionPane.showInputDialog("Please enter the order ID of the order you wish to change the status of"));
 		String status = "";
 		String sql2 = "SELECT * FROM orders WHERE orders.orderID="+orderID;
-		
+				
 			try{
 				Class.forName("JDBC");
 				System.out.println("Connecting to NB Gardens database...");
@@ -785,6 +857,7 @@ public class JDBC {
 		
 	}
 	
+	
 	public void addToPO(){
 
 		Connection conn = null;
@@ -803,7 +876,7 @@ public class JDBC {
 				
 			
 			int Quantity= Integer.parseInt(JOptionPane.showInputDialog("Please enter the quantity of the product you wish to acquire from this purchase order"));
-			String sql2 = "SELECT * FROM POLine WHERE POLine.PuchaseOrderID=" + PurchaseOrderID;
+			//String sql2 = "SELECT * FROM POLine WHERE POLine.PuchaseOrderID=" + PurchaseOrderID;
 			
 			try{
 				Class.forName("JDBC");
@@ -841,11 +914,12 @@ public class JDBC {
 		}
 	}
 	}
+	
 
 	public void travellingSalesperson(){
 		Connection conn = null;
 		Statement stmt = null;
-		//3 array lists used to store unv
+		//3 array lists used to store unvisited x/y co-ordinates and visited points
 		ArrayList <Integer> visited = new ArrayList<Integer>();
 		visited.add(0);
 		ArrayList <Integer> unvisitedX  = new ArrayList<Integer>();
