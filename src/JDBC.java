@@ -234,6 +234,7 @@ public class JDBC {
 				int orderId = rs.getInt("Orders_OrderID");
 				int productId = rs.getInt("Products_ProductID");
 				int quantity = rs.getInt("Quantity");
+				
 					
 				orderLineList.add(new WarehouseOrderLine(orderId, productId, quantity));
 				System.out.println("Order ID: " + orderId + ", Product ID: " + productId + ", Quantity: " + quantity);
@@ -637,10 +638,17 @@ public class JDBC {
 				
 				while (rs.next()){
 					int stock = rs.getInt("StockLevel");
+					if(quantity>stock){
+						JOptionPane.showMessageDialog(null, "The quantity entered was too high!");
+						return;
+					}
+					else{
 					newStockLevel = stock-quantity;
+					}
 				}
 				
 				rs.close();
+				
 				System.out.println(status);
 				String updateStatus = "UPDATE products SET StockLevel ='"+newStockLevel+"'WHERE ProductID ='"+ productID+"';";
 				stmt.executeUpdate(updateStatus);
