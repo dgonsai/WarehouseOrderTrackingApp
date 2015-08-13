@@ -61,7 +61,7 @@ public class MainWindow extends JFrame {
 	
 	private void createButtons(){
 		
-		//declaring all of the buttons on the application and setting the bounds on the form
+		//declaring all of the buttons on the application and setting the bounds on the buttons
 		headerLabel.setText("NB Garden - Warehouse App");
 		JButton poButton = new JButton("Purchase Order List");
 		poButton.setBounds(197, 237, 159, 23);
@@ -145,8 +145,6 @@ public class MainWindow extends JFrame {
 	}
 	
 	private class ButtonClick implements ActionListener{
-
-
 		@Override
 		public void actionPerformed(ActionEvent ae){
 			//the command string will get an action command based on what is clicked on the JPanel
@@ -214,10 +212,14 @@ public class MainWindow extends JFrame {
 			}
 		}
 	}
+	
+	//all of these methods call methods from the JDBC class
 	public void CreateOrder(){
+		//creating a new order to write to the database
 		JDBC jdbc = new JDBC();
 		jdbc.createOrder();
 		
+		//yes/no dialog - add products to an order that was just created
 		int dialogResult = JOptionPane.showConfirmDialog(null, "Add products to this order?");
 		if(dialogResult==JOptionPane.NO_OPTION){
 			return;
@@ -228,6 +230,7 @@ public class MainWindow extends JFrame {
 	}
 	
 	public void AddToOrder(){
+		//adding products to an existing order
 		JDBC jdbc = new JDBC();
 		jdbc.addToOrder();
 	}
@@ -240,10 +243,13 @@ public class MainWindow extends JFrame {
 		DefaultListModel<String> listModel = (DefaultListModel<String>) list.getModel();	
 		listModel.clear();
 		
+		//adding the elements of the arraylist in the readOrders method to the jlist
 		for (String orderString: jdbc.readOrders()){
 			listModel.addElement(orderString);
 		}
 		
+		//adding a mouse listener to the list
+		//if an order is double clicked, an order's work status can be change through the editWorkStatus() method
 		list.addMouseListener(new MouseAdapter(){
 			public void mouseClicked(MouseEvent event){
 				list = (JList)event.getSource();
@@ -251,7 +257,6 @@ public class MainWindow extends JFrame {
 					 int index = list.locationToIndex(event.getPoint());
 				     Object item = listModel.getElementAt(index);;
 				     list.ensureIndexIsVisible(index);
-				     ListModel<String> listModel = list.getModel();
 				     System.out.println(listModel.toString());
 				     int dialogResult = JOptionPane.showConfirmDialog(null, "Work on this order?");
 						if(dialogResult==JOptionPane.YES_OPTION){
@@ -266,6 +271,7 @@ public class MainWindow extends JFrame {
 	}
 	
 	public void DisplayProductList(){
+		//listing all of the products in the database
 		JDBC jdbc = new JDBC();
 		jdbc.readProducts();
 		DefaultListModel<String> listModel = (DefaultListModel<String>) list.getModel();	
@@ -276,6 +282,7 @@ public class MainWindow extends JFrame {
 	}
 	
 	public void DisplayOrderLine(){
+		//display the products in a particular order within the database
 		JDBC jdbc = new JDBC();	
 		jdbc.readOrderLine();
 		DefaultListModel<String> listModel = (DefaultListModel<String>) list.getModel();	
