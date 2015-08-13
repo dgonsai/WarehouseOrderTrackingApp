@@ -971,12 +971,11 @@ public class JDBC {
 		Statement stmt = null;
 		ArrayList <Integer> visited = new ArrayList<Integer>();
 		visited.add(0);
-		ArrayList <Integer> unvisitedX  = new ArrayList<Integer>();
-		ArrayList <Integer> unvisitedY = new ArrayList<Integer>();
+		ArrayList <Integer> unvisitedX  = new ArrayList<Integer>(); //unvisited x co-ordinates
+		ArrayList <Integer> unvisitedY = new ArrayList<Integer>(); //unvisited y co-ordinates
 		
 		ArrayList <String> visitList = new ArrayList<String>();
 		int visitedPointer = 0;
-		
 		
 		int orderID = Integer.parseInt(JOptionPane.showInputDialog("Please enter the order ID of the order you wish to see"));
 		String sql4 = "SELECT * FROM products, orderline WHERE Orders_OrderID ="+orderID+" AND orderline.Products_ProductID = products.ProductID";

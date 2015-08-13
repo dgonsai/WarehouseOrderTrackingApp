@@ -6,6 +6,7 @@ import javax.swing.JLabel;
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
+import javax.swing.ListModel;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -250,6 +251,8 @@ public class MainWindow extends JFrame {
 					 int index = list.locationToIndex(event.getPoint());
 				     Object item = listModel.getElementAt(index);;
 				     list.ensureIndexIsVisible(index);
+				     ListModel<String> listModel = list.getModel();
+				     System.out.println(listModel.toString());
 				     int dialogResult = JOptionPane.showConfirmDialog(null, "Work on this order?");
 						if(dialogResult==JOptionPane.YES_OPTION){
 							editWorkStatus();
